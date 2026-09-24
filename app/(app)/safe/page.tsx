@@ -1,299 +1,339 @@
-const safeTips = [
-  {
-    league: "Bundesliga",
-    time: "18:30",
-    match: "Beispiel FC – Beispiel 04",
-    market: "Über 1,5 Tore",
-    probability: "82%",
-    odds: "1.32",
-    value: "+8.2%",
-  },
-  {
-    league: "Premier League",
-    time: "20:00",
-    match: "Example United – Example City",
-    market: "Doppelte Chance 1X",
-    probability: "79%",
-    odds: "1.38",
-    value: "+9.0%",
-  },
-  {
-    league: "La Liga",
-    time: "20:30",
-    match: "Example Madrid – Example FC",
-    market: "Über 1,5 Tore",
-    probability: "84%",
-    odds: "1.30",
-    value: "+9.2%",
-  },
-];
+"use client";
+
+import { useEffect, useState } from "react";
+
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
+type Tip = {
+  id: number;
+  event_id: number;
+  category: string;
+  league: string;
+  home: string;
+  away: string;
+  event_date: string;
+  market: string;
+  selection: string;
+  market_key: string;
+  odds: number;
+  model_probability: number;
+  fair_odds: number;
+  value: number;
+  data_confidence: number;
+};
+
+type TipsResponse = {
+  success: boolean;
+  tip_count: number;
+  tips: Tip[];
+};
+
+function formatProbability(value: number) {
+  return `${(value * 100).toFixed(1)}%`;
+}
+
+function formatKickoff(date: string) {
+  return new Date(date).toLocaleTimeString("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 export default function SafePage() {
-  return (
-    <section className="px-6 py-8 md:px-10 md:py-10">
-      {/* Header */}
-      <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-        <div>
-          <p className="text-sm text-white/40">ZEVYQ Kategorie</p>
+  const [tips, setTips] = useState<Tip[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-          <h1 className="mt-2 text-3xl font-bold md:text-4xl">
-            Safe
+  useEffect(() => {
+    async function loadTips() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch(`${API_URL}/analysis/tips`, {
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error("Die ZEVYQ-Tipps konnten nicht geladen werden.");
+        }
+
+        const data = (await response.json()) as TipsResponse;
+
+        if (!data.success) {
+          throw new Error("Die ZEVYQ-Analyse war nicht erfolgreich.");
+        }
+
+        const safeTips = (data.tips || []).filter(
+          (tip) => tip.category.toUpperCase() === "SAFE",
+        );
+
+        setTips(safeTips);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Die Safe-Tipps konnten nicht geladen werden.",
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadTips();
+  }, []);
+
+  const averageProbability =
+    tips.length > 0
+      ? tips.reduce((sum, tip) => sum + tip.model_probability, 0) /
+        tips.length
+      : 0;
+
+  const averageValue =
+    tips.length > 0
+      ? tips.reduce((sum, tip) => sum + tip.value, 0) / tips.length
+      : 0;
+
+  return (
+    <section className="px-6 py-10 lg:px-10">
+      <div className="mx-auto max-w-7xl">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/30">
+            ZEVYQ Intelligence
+          </div>
+
+          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+            Safe Tipps
           </h1>
 
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-white/50">
-            Konservativere ZEVYQ-Empfehlungen mit Fokus auf eine hohe
-            modellierte Eintrittswahrscheinlichkeit.
+          <p className="mt-3 max-w-3xl text-white/45">
+            Die aktuell von der ZEVYQ V5.6 Engine als Safe qualifizierten
+            Märkte.
           </p>
         </div>
 
-        <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 text-xs text-yellow-200/70">
-          Demo-Daten – noch nicht mit der Live-KI verbunden
+        {/* Status */}
+        <div className="mb-8 flex flex-wrap gap-3">
+          <div className="rounded-full border border-green-500/20 bg-green-500/[0.06] px-4 py-2 text-sm text-green-300">
+            {loading
+              ? "KI-Analyse läuft…"
+              : "Live mit ZEVYQ Backend verbunden"}
+          </div>
+
+          {!loading && !error && (
+            <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/45">
+              {tips.length} Safe-Tipp{tips.length === 1 ? "" : "s"}
+            </div>
+          )}
         </div>
-      </div>
 
-      {/* Category explanation */}
-      <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium">
-                SAFE
-              </span>
-
-              <span className="text-xs text-white/30">
-                Konservatives Tipp-Profil
-              </span>
+        {/* Error */}
+        {error && (
+          <div className="mb-8 rounded-2xl border border-red-500/20 bg-red-500/[0.05] p-6">
+            <div className="text-sm font-medium text-red-300">
+              Safe-Tipps konnten nicht geladen werden
             </div>
 
-            <h2 className="mt-4 text-2xl font-bold">
-              Fokus auf Wahrscheinlichkeit
-            </h2>
+            <p className="mt-2 text-sm leading-6 text-red-200/60">
+              {error}
+            </p>
+          </div>
+        )}
 
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/50">
-              Die Safe-Kategorie soll später Spiele und Märkte auswählen,
-              bei denen das ZEVYQ-Modell eine besonders hohe
-              Eintrittswahrscheinlichkeit berechnet.
+        {/* Stats */}
+        <div className="mb-8 grid gap-4 sm:grid-cols-3">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+            <div className="text-xs uppercase tracking-[0.18em] text-white/30">
+              Safe Tipps
+            </div>
+
+            <div className="mt-3 text-3xl font-bold">
+              {loading ? "…" : tips.length}
+            </div>
+
+            <p className="mt-2 text-sm text-white/35">
+              Aktuell qualifizierte Safe-Tipps
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-black/20 p-5 md:min-w-44">
-            <div className="text-xs text-white/30">
-              Zielbereich
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+            <div className="text-xs uppercase tracking-[0.18em] text-white/30">
+              Ø Modell
             </div>
 
-            <div className="mt-2 text-3xl font-bold">
-              80%+
+            <div className="mt-3 text-3xl font-bold">
+              {loading
+                ? "…"
+                : tips.length > 0
+                  ? formatProbability(averageProbability)
+                  : "–"}
             </div>
 
-            <div className="mt-1 text-xs text-white/30">
-              Modell-Wahrscheinlichkeit
+            <p className="mt-2 text-sm text-white/35">
+              Durchschnittliche Modellwahrscheinlichkeit
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+            <div className="text-xs uppercase tracking-[0.18em] text-white/30">
+              Ø Value
+            </div>
+
+            <div className="mt-3 text-3xl font-bold">
+              {loading
+                ? "…"
+                : tips.length > 0
+                  ? `+${averageValue.toFixed(1)}%`
+                  : "–"}
+            </div>
+
+            <p className="mt-2 text-sm text-white/35">
+              Durchschnittlicher berechneter Value
+            </p>
+          </div>
+        </div>
+
+        {/* Loading */}
+        {loading && (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-10 text-center">
+            <div className="text-lg font-semibold">
+              ZEVYQ analysiert aktuelle Spiele…
+            </div>
+
+            <p className="mt-2 text-sm text-white/35">
+              Die Safe-Märkte werden geladen.
+            </p>
+          </div>
+        )}
+
+        {/* Empty */}
+        {!loading && !error && tips.length === 0 && (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-10 text-center">
+            <div className="text-lg font-semibold">
+              Aktuell kein Safe-Tipp
+            </div>
+
+            <p className="mt-2 text-sm leading-6 text-white/35">
+              Für den aktuellen Analysezeitraum wurde kein Markt als Safe
+              qualifiziert.
+            </p>
+          </div>
+        )}
+
+        {/* Safe Tips */}
+        {!loading && tips.length > 0 && (
+          <div className="space-y-4">
+            {tips.map((tip) => (
+              <a
+                key={tip.id}
+                href={`/tips/${tip.id}`}
+                className="group block rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition hover:border-white/20 hover:bg-white/[0.04]"
+              >
+                <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-white/35">
+                      <span className="text-white/70">SAFE</span>
+                      <span>•</span>
+                      <span>{tip.league}</span>
+                      <span>•</span>
+                      <span>{formatKickoff(tip.event_date)} Uhr</span>
+                    </div>
+
+                    <h2 className="mt-3 text-xl font-semibold">
+                      {tip.home} – {tip.away}
+                    </h2>
+
+                    <div className="mt-2 text-sm text-white/40">
+                      {tip.market}:{" "}
+                      <span className="text-white/75">
+                        {tip.selection}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3 xl:w-[390px]">
+                    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                      <div className="text-xs text-white/35">
+                        Quote
+                      </div>
+
+                      <div className="mt-2 text-xl font-bold">
+                        {tip.odds.toFixed(2)}
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                      <div className="text-xs text-white/35">
+                        Modell
+                      </div>
+
+                      <div className="mt-2 text-xl font-bold">
+                        {formatProbability(tip.model_probability)}
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                      <div className="text-xs text-white/35">
+                        Value
+                      </div>
+
+                      <div className="mt-2 text-xl font-bold">
+                        +{tip.value.toFixed(1)}%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+                  <div className="flex flex-wrap gap-4 text-xs text-white/30">
+                    <span>
+                      Fair Odds: {tip.fair_odds.toFixed(2)}
+                    </span>
+
+                    <span>
+                      Datenqualität:{" "}
+                      {Math.round(tip.data_confidence * 100)}%
+                    </span>
+                  </div>
+
+                  <div className="text-sm font-medium text-white/45 transition group-hover:text-white">
+                    Analyse öffnen →
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+
+        {/* Info */}
+        <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+          <div className="text-xs uppercase tracking-[0.2em] text-white/30">
+            Safe Kategorie
+          </div>
+
+          <h2 className="mt-3 text-xl font-semibold">
+            Live aus der ZEVYQ V5.6 Engine
+          </h2>
+
+          <p className="mt-3 max-w-4xl text-sm leading-7 text-white/40">
+            Diese Seite zeigt ausschließlich die Tipps, die vom aktuellen
+            ZEVYQ-Backend der Kategorie SAFE zugeordnet wurden. Es werden
+            keine separaten Demo-Daten verwendet.
+          </p>
+
+          <div className="mt-5 flex flex-wrap gap-3 text-xs">
+            <div className="rounded-full border border-green-500/20 bg-green-500/[0.06] px-4 py-2 text-green-300">
+              Backend verbunden
+            </div>
+
+            <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white/40">
+              ZEVYQ V5.6
             </div>
           </div>
         </div>
       </div>
-
-      {/* Statistics */}
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title="Safe-Tipps heute"
-          value="3"
-          description="Demo-Empfehlungen"
-        />
-
-        <StatCard
-          title="Ø Wahrscheinlichkeit"
-          value="81.7%"
-          description="über Demo-Tipps"
-        />
-
-        <StatCard
-          title="Ø Quote"
-          value="1.33"
-          description="Demo-Werte"
-        />
-
-        <StatCard
-          title="Trefferquote"
-          value="—"
-          description="Noch keine Live-Daten"
-        />
-      </div>
-
-      {/* Tips */}
-      <div className="mt-8">
-        <div>
-          <h2 className="text-xl font-bold">
-            Aktuelle Safe-Tipps
-          </h2>
-
-          <p className="mt-1 text-sm text-white/40">
-            Die konservativsten Empfehlungen der heutigen Analyse
-          </p>
-        </div>
-
-        <div className="mt-5 space-y-4">
-          {safeTips.map((tip) => (
-            <div
-              key={tip.match}
-              className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 transition hover:bg-white/[0.05]"
-            >
-              <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium">
-                      SAFE
-                    </span>
-
-                    <span className="text-xs text-white/30">
-                      {tip.league}
-                    </span>
-
-                    <span className="text-xs text-white/30">
-                      {tip.time} Uhr
-                    </span>
-                  </div>
-
-                  <h3 className="mt-4 text-xl font-semibold">
-                    {tip.match}
-                  </h3>
-
-                  <p className="mt-2 text-sm text-white/40">
-                    {tip.market}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:w-[500px]">
-                  <Metric
-                    label="Modell"
-                    value={tip.probability}
-                  />
-
-                  <Metric
-                    label="Quote"
-                    value={tip.odds}
-                  />
-
-                  <Metric
-                    label="Value"
-                    value={tip.value}
-                  />
-
-                  <button className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:bg-white/10">
-                    <div className="text-xs text-white/30">
-                      Details
-                    </div>
-
-                    <div className="mt-1 text-sm font-semibold">
-                      Öffnen →
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Method */}
-      <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/30">
-          ZEVYQ Safe-System
-        </p>
-
-        <h2 className="mt-3 text-xl font-bold">
-          Wie wird ein Safe-Tipp ausgewählt?
-        </h2>
-
-        <div className="mt-5 grid gap-4 md:grid-cols-3">
-          <MethodCard
-            number="01"
-            title="Modellanalyse"
-            text="Das ZEVYQ-Modell berechnet Wahrscheinlichkeiten für verschiedene Märkte."
-          />
-
-          <MethodCard
-            number="02"
-            title="Qualitätsfilter"
-            text="Nur Kandidaten, die definierte Qualitätskriterien erfüllen, werden berücksichtigt."
-          />
-
-          <MethodCard
-            number="03"
-            title="Safe-Auswahl"
-            text="Aus den geeigneten Kandidaten werden die konservativeren Empfehlungen ausgewählt."
-          />
-        </div>
-      </div>
     </section>
-  );
-}
-
-function StatCard({
-  title,
-  value,
-  description,
-}: {
-  title: string;
-  value: string;
-  description: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-      <div className="text-sm text-white/40">{title}</div>
-
-      <div className="mt-3 text-3xl font-bold">
-        {value}
-      </div>
-
-      <div className="mt-2 text-xs text-white/30">
-        {description}
-      </div>
-    </div>
-  );
-}
-
-function Metric({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
-      <div className="text-xs text-white/30">
-        {label}
-      </div>
-
-      <div className="mt-1 text-lg font-semibold">
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function MethodCard({
-  number,
-  title,
-  text,
-}: {
-  number: string;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-      <div className="text-xs font-semibold tracking-[0.2em] text-white/30">
-        {number}
-      </div>
-
-      <h3 className="mt-4 font-semibold">
-        {title}
-      </h3>
-
-      <p className="mt-2 text-sm leading-6 text-white/40">
-        {text}
-      </p>
-    </div>
   );
 }

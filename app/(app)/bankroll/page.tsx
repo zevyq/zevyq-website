@@ -1,227 +1,391 @@
-const bankroll = {
-  start: "1.000 €",
-  current: "1.131 €",
-  profit: "+131 €",
-  roi: "+13,1 %",
+"use client";
+
+import { useEffect, useState } from "react";
+
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
+type AuthUser = {
+  user_id: string;
+  email: string;
+  display_name: string;
+  plan: string;
+  account_status: string;
 };
 
-const recentBets = [
-  {
-    date: "24.09.2026",
-    game: "Beispiel FC – Beispiel 04",
-    category: "Best Tip",
-    odds: "1.72",
-    stake: "25 €",
-    result: "Offen",
-  },
-  {
-    date: "23.09.2026",
-    game: "Example United – Example City",
-    category: "Value",
-    odds: "1.85",
-    stake: "25 €",
-    result: "Gewonnen",
-  },
-  {
-    date: "22.09.2026",
-    game: "Example Madrid – Example FC",
-    category: "Safe",
-    odds: "1.32",
-    stake: "30 €",
-    result: "Gewonnen",
-  },
-  {
-    date: "21.09.2026",
-    game: "Example Team – Example Club",
-    category: "Verdoppler",
-    odds: "2.09",
-    stake: "20 €",
-    result: "Verloren",
-  },
-];
+type BankrollSummary = {
+  user_id: string;
+  bets: number;
+  total_stake: number;
+  profit_loss: number;
+  hit_rate: number | null;
+  roi: number | null;
+  won: number;
+  lost: number;
+  void: number;
+  open: number;
+};
+
+function formatEuro(value: number) {
+  return `${value >= 0 ? "+" : ""}${value.toFixed(2)} €`;
+}
+
+function formatPercent(value: number | null) {
+  if (value === null) {
+    return "–";
+  }
+
+  return `${value.toFixed(1)}%`;
+}
 
 export default function BankrollPage() {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [bankroll, setBankroll] = useState<BankrollSummary | null>(null);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  async function loadBankroll() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const storedUser = localStorage.getItem("zevyq_user");
+
+      if (!storedUser) {
+        throw new Error(
+          "Kein ZEVYQ-Account gefunden. Bitte zuerst anmelden.",
+        );
+      }
+
+      const parsedUser = JSON.parse(storedUser) as AuthUser;
+
+      setUser(parsedUser);
+
+      const response = await fetch(
+        `${API_URL}/users/${parsedUser.user_id}/bankroll`,
+        {
+          cache: "no-store",
+        },
+      );
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(
+          data?.detail ||
+            "Die Bankroll-Daten konnten nicht geladen werden.",
+        );
+      }
+
+      setBankroll(data?.bankroll || null);
+    } catch (err) {
+      if (err instanceof TypeError) {
+        setError(
+          "Das ZEVYQ-Backend ist aktuell nicht erreichbar.",
+        );
+      } else {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Die Bankroll konnte nicht geladen werden.",
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadBankroll();
+  }, []);
+
+  const profit = bankroll?.profit_loss ?? 0;
+
   return (
-    <div className="px-6 py-10 lg:px-10">
-      <div className="mx-auto max-w-6xl">
+    <section className="px-6 py-10 lg:px-10">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-          <div>
-            <div className="mb-2 text-sm text-white/40">
-              ZEVYQ Bankroll
-            </div>
-
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Bankroll
-            </h1>
-
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/50">
-              Deine persönliche Wettbankroll, Einsätze und Entwicklung auf
-              einen Blick.
-            </p>
+        <div className="mb-10">
+          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/30">
+            ZEVYQ Intelligence
           </div>
 
-          <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 px-4 py-3 text-xs text-yellow-400">
-            Demo-Daten – persönliche Bankroll folgt
-          </div>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+            Bankroll
+          </h1>
+
+          <p className="mt-3 text-white/45">
+            Deine persönliche Einsatz- und Ergebnisübersicht.
+          </p>
         </div>
 
-        {/* Bankroll overview */}
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-            <div className="text-sm text-white/40">Start-Bankroll</div>
-            <div className="mt-3 text-2xl font-bold">{bankroll.start}</div>
-            <div className="mt-1 text-xs text-white/30">
-              Ausgangswert
-            </div>
+        {/* Connection */}
+        <div className="mb-8 flex flex-wrap items-center gap-3">
+          <div className="rounded-full border border-green-500/20 bg-green-500/[0.06] px-4 py-2 text-sm text-green-300">
+            {loading
+              ? "Bankroll wird geladen..."
+              : "Live mit ZEVYQ Backend verbunden"}
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-            <div className="text-sm text-white/40">Aktuelle Bankroll</div>
-            <div className="mt-3 text-2xl font-bold">
-              {bankroll.current}
+          {user && (
+            <div className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-white/50">
+              {user.email}
             </div>
-            <div className="mt-1 text-xs text-white/30">
-              aktueller Stand
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-            <div className="text-sm text-white/40">Gewinn / Verlust</div>
-            <div className="mt-3 text-2xl font-bold text-white">
-              {bankroll.profit}
-            </div>
-            <div className="mt-1 text-xs text-white/30">
-              seit Beginn
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-            <div className="text-sm text-white/40">ROI</div>
-            <div className="mt-3 text-2xl font-bold">
-              {bankroll.roi}
-            </div>
-            <div className="mt-1 text-xs text-white/30">
-              aktuelle Entwicklung
-            </div>
-          </div>
+          )}
         </div>
 
-        {/* Bankroll chart placeholder */}
-        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02]">
-          <div className="border-b border-white/10 px-6 py-5">
-            <h2 className="text-lg font-semibold">
-              Bankroll-Entwicklung
-            </h2>
+        {/* Error */}
+        {error && (
+          <div className="mb-8 rounded-2xl border border-red-500/20 bg-red-500/[0.05] p-6">
+            <div className="text-sm font-medium text-red-300">
+              Bankroll konnte nicht geladen werden
+            </div>
 
-            <p className="mt-1 text-sm text-white/40">
-              Entwicklung deiner Bankroll über den ausgewählten Zeitraum.
+            <p className="mt-2 text-sm leading-6 text-white/40">
+              {error}
             </p>
+
+            <button
+              type="button"
+              onClick={loadBankroll}
+              className="mt-5 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-white/90"
+            >
+              Erneut versuchen
+            </button>
           </div>
+        )}
 
-          <div className="flex h-64 items-center justify-center px-6">
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-xl">
-                €
-              </div>
-
-              <div className="font-medium">
-                Noch keine persönlichen Live-Daten
-              </div>
-
-              <div className="mt-2 text-sm text-white/40">
-                Sobald deine gespielten Tipps erfasst werden, erscheint
-                hier automatisch deine Bankroll-Entwicklung.
-              </div>
+        {/* Loading */}
+        {loading && !error && (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8">
+            <div className="text-sm text-white/40">
+              Deine persönlichen Bankroll-Daten werden geladen...
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Recent bets */}
-        <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02]">
-          <div className="border-b border-white/10 px-6 py-5">
-            <h2 className="text-lg font-semibold">
-              Letzte gespielte Tipps
-            </h2>
-
-            <p className="mt-1 text-sm text-white/40">
-              Übersicht deiner zuletzt erfassten Einsätze.
-            </p>
-          </div>
-
-          <div>
-            {recentBets.map((bet, index) => (
-              <div
-                key={index}
-                className="grid gap-4 border-b border-white/10 px-6 py-5 last:border-b-0 lg:grid-cols-[1.5fr_1.2fr_0.6fr_0.7fr_0.8fr]"
-              >
-                <div>
-                  <div className="text-xs text-white/35">
-                    {bet.date}
-                  </div>
-                  <div className="mt-1 font-semibold">
-                    {bet.game}
-                  </div>
+        {/* Bankroll */}
+        {!loading && !error && bankroll && (
+          <>
+            {/* Main bankroll cards */}
+            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+                <div className="text-xs uppercase tracking-[0.18em] text-white/30">
+                  Gewinn / Verlust
                 </div>
 
-                <div>
-                  <div className="text-xs text-white/35">
-                    Kategorie
-                  </div>
-                  <div className="mt-1 text-sm">
-                    {bet.category}
-                  </div>
+                <div
+                  className={`mt-4 text-3xl font-bold ${
+                    profit > 0
+                      ? "text-green-300"
+                      : profit < 0
+                        ? "text-red-300"
+                        : ""
+                  }`}
+                >
+                  {formatEuro(profit)}
                 </div>
 
-                <div>
-                  <div className="text-xs text-white/35">
-                    Quote
-                  </div>
-                  <div className="mt-1 text-sm font-medium">
-                    {bet.odds}
-                  </div>
+                <p className="mt-2 text-sm text-white/35">
+                  Aktuelles Ergebnis
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+                <div className="text-xs uppercase tracking-[0.18em] text-white/30">
+                  Gesamteinsätze
                 </div>
 
-                <div>
-                  <div className="text-xs text-white/35">
-                    Einsatz
-                  </div>
-                  <div className="mt-1 text-sm font-medium">
-                    {bet.stake}
-                  </div>
+                <div className="mt-4 text-3xl font-bold">
+                  {bankroll.total_stake.toFixed(2)} €
                 </div>
 
-                <div>
-                  <div className="text-xs text-white/35">
-                    Ergebnis
+                <p className="mt-2 text-sm text-white/35">
+                  Bisher erfasst
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+                <div className="text-xs uppercase tracking-[0.18em] text-white/30">
+                  ROI
+                </div>
+
+                <div className="mt-4 text-3xl font-bold">
+                  {formatPercent(bankroll.roi)}
+                </div>
+
+                <p className="mt-2 text-sm text-white/35">
+                  Rendite auf deine Einsätze
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+                <div className="text-xs uppercase tracking-[0.18em] text-white/30">
+                  Trefferquote
+                </div>
+
+                <div className="mt-4 text-3xl font-bold">
+                  {formatPercent(bankroll.hit_rate)}
+                </div>
+
+                <p className="mt-2 text-sm text-white/35">
+                  Abgeschlossene Tipps
+                </p>
+              </div>
+            </div>
+
+            {/* Result breakdown */}
+            <div className="mt-8 grid gap-5 lg:grid-cols-2">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-7">
+                <div className="text-xs uppercase tracking-[0.2em] text-white/30">
+                  Tipp-Ergebnisse
+                </div>
+
+                <h2 className="mt-3 text-xl font-semibold">
+                  Deine Performance
+                </h2>
+
+                <div className="mt-7 grid grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-green-500/10 bg-green-500/[0.03] p-5">
+                    <div className="text-sm text-white/40">
+                      Gewonnen
+                    </div>
+
+                    <div className="mt-2 text-2xl font-bold text-green-300">
+                      {bankroll.won}
+                    </div>
                   </div>
 
-                  <div className="mt-1">
-                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs">
-                      {bet.result}
+                  <div className="rounded-xl border border-red-500/10 bg-red-500/[0.03] p-5">
+                    <div className="text-sm text-white/40">
+                      Verloren
+                    </div>
+
+                    <div className="mt-2 text-2xl font-bold text-red-300">
+                      {bankroll.lost}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+                    <div className="text-sm text-white/40">
+                      Offen
+                    </div>
+
+                    <div className="mt-2 text-2xl font-bold">
+                      {bankroll.open}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+                    <div className="text-sm text-white/40">
+                      Void
+                    </div>
+
+                    <div className="mt-2 text-2xl font-bold">
+                      {bankroll.void}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-7">
+                <div className="text-xs uppercase tracking-[0.2em] text-white/30">
+                  Bankroll-System
+                </div>
+
+                <h2 className="mt-3 text-xl font-semibold">
+                  Persönliche Bankroll
+                </h2>
+
+                <p className="mt-4 text-sm leading-7 text-white/40">
+                  Sobald du bei einem ZEVYQ-Tipp auf „Tipp nachgespielt“
+                  klickst und deinen Einsatz erfasst, wird dieser Tipp
+                  deinem persönlichen Konto zugeordnet.
+                </p>
+
+                <div className="mt-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/40">
+                      Tipps gespielt
+                    </span>
+
+                    <span className="font-medium">
+                      {bankroll.bets}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/40">
+                      Gesamteinsatz
+                    </span>
+
+                    <span className="font-medium">
+                      {bankroll.total_stake.toFixed(2)} €
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/40">
+                      Aktueller ROI
+                    </span>
+
+                    <span className="font-medium">
+                      {formatPercent(bankroll.roi)}
                     </span>
                   </div>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* Navigation */}
+            <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-7">
+              <div className="text-xs uppercase tracking-[0.2em] text-white/30">
+                ZEVYQ Konto
+              </div>
+
+              <h2 className="mt-3 text-xl font-semibold">
+                Deine persönlichen Daten
+              </h2>
+
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-white/40">
+                Bankroll, Statistik und Tipp-Historie greifen auf dieselben
+                persönlichen Daten deines ZEVYQ-Kontos zu.
+              </p>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href="/statistics"
+                  className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-medium text-white/70 transition hover:border-white/20 hover:text-white"
+                >
+                  Statistik öffnen →
+                </a>
+
+                <a
+                  href="/history"
+                  className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-medium text-white/70 transition hover:border-white/20 hover:text-white"
+                >
+                  Tipp-Historie öffnen →
+                </a>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* No data */}
+        {!loading && !error && !bankroll && (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8">
+            <h2 className="text-xl font-semibold">
+              Noch keine Bankroll-Daten vorhanden
+            </h2>
+
+            <p className="mt-3 text-sm leading-6 text-white/40">
+              Sobald persönliche Tipps erfasst wurden, erscheinen hier deine
+              Bankroll-Daten.
+            </p>
           </div>
-        </div>
-
-        {/* Important note */}
-        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-          <h2 className="font-semibold">
-            Tipp nachgespielt?
-          </h2>
-
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-white/45">
-            Später kannst du direkt bei jedem ZEVYQ-Tipp auf
-            „Tipp nachgespielt“ klicken, deinen Einsatz eintragen und
-            anschließend das Ergebnis erfassen. ZEVYQ aktualisiert
-            daraus automatisch deine persönliche Bankroll, Statistik
-            und ROI.
-          </p>
-        </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 }
