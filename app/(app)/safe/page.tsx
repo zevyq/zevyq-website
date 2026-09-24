@@ -1,0 +1,299 @@
+const safeTips = [
+  {
+    league: "Bundesliga",
+    time: "18:30",
+    match: "Beispiel FC – Beispiel 04",
+    market: "Über 1,5 Tore",
+    probability: "82%",
+    odds: "1.32",
+    value: "+8.2%",
+  },
+  {
+    league: "Premier League",
+    time: "20:00",
+    match: "Example United – Example City",
+    market: "Doppelte Chance 1X",
+    probability: "79%",
+    odds: "1.38",
+    value: "+9.0%",
+  },
+  {
+    league: "La Liga",
+    time: "20:30",
+    match: "Example Madrid – Example FC",
+    market: "Über 1,5 Tore",
+    probability: "84%",
+    odds: "1.30",
+    value: "+9.2%",
+  },
+];
+
+export default function SafePage() {
+  return (
+    <section className="px-6 py-8 md:px-10 md:py-10">
+      {/* Header */}
+      <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+        <div>
+          <p className="text-sm text-white/40">ZEVYQ Kategorie</p>
+
+          <h1 className="mt-2 text-3xl font-bold md:text-4xl">
+            Safe
+          </h1>
+
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-white/50">
+            Konservativere ZEVYQ-Empfehlungen mit Fokus auf eine hohe
+            modellierte Eintrittswahrscheinlichkeit.
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 text-xs text-yellow-200/70">
+          Demo-Daten – noch nicht mit der Live-KI verbunden
+        </div>
+      </div>
+
+      {/* Category explanation */}
+      <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium">
+                SAFE
+              </span>
+
+              <span className="text-xs text-white/30">
+                Konservatives Tipp-Profil
+              </span>
+            </div>
+
+            <h2 className="mt-4 text-2xl font-bold">
+              Fokus auf Wahrscheinlichkeit
+            </h2>
+
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/50">
+              Die Safe-Kategorie soll später Spiele und Märkte auswählen,
+              bei denen das ZEVYQ-Modell eine besonders hohe
+              Eintrittswahrscheinlichkeit berechnet.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-black/20 p-5 md:min-w-44">
+            <div className="text-xs text-white/30">
+              Zielbereich
+            </div>
+
+            <div className="mt-2 text-3xl font-bold">
+              80%+
+            </div>
+
+            <div className="mt-1 text-xs text-white/30">
+              Modell-Wahrscheinlichkeit
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Statistics */}
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          title="Safe-Tipps heute"
+          value="3"
+          description="Demo-Empfehlungen"
+        />
+
+        <StatCard
+          title="Ø Wahrscheinlichkeit"
+          value="81.7%"
+          description="über Demo-Tipps"
+        />
+
+        <StatCard
+          title="Ø Quote"
+          value="1.33"
+          description="Demo-Werte"
+        />
+
+        <StatCard
+          title="Trefferquote"
+          value="—"
+          description="Noch keine Live-Daten"
+        />
+      </div>
+
+      {/* Tips */}
+      <div className="mt-8">
+        <div>
+          <h2 className="text-xl font-bold">
+            Aktuelle Safe-Tipps
+          </h2>
+
+          <p className="mt-1 text-sm text-white/40">
+            Die konservativsten Empfehlungen der heutigen Analyse
+          </p>
+        </div>
+
+        <div className="mt-5 space-y-4">
+          {safeTips.map((tip) => (
+            <div
+              key={tip.match}
+              className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 transition hover:bg-white/[0.05]"
+            >
+              <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium">
+                      SAFE
+                    </span>
+
+                    <span className="text-xs text-white/30">
+                      {tip.league}
+                    </span>
+
+                    <span className="text-xs text-white/30">
+                      {tip.time} Uhr
+                    </span>
+                  </div>
+
+                  <h3 className="mt-4 text-xl font-semibold">
+                    {tip.match}
+                  </h3>
+
+                  <p className="mt-2 text-sm text-white/40">
+                    {tip.market}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:w-[500px]">
+                  <Metric
+                    label="Modell"
+                    value={tip.probability}
+                  />
+
+                  <Metric
+                    label="Quote"
+                    value={tip.odds}
+                  />
+
+                  <Metric
+                    label="Value"
+                    value={tip.value}
+                  />
+
+                  <button className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:bg-white/10">
+                    <div className="text-xs text-white/30">
+                      Details
+                    </div>
+
+                    <div className="mt-1 text-sm font-semibold">
+                      Öffnen →
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Method */}
+      <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/30">
+          ZEVYQ Safe-System
+        </p>
+
+        <h2 className="mt-3 text-xl font-bold">
+          Wie wird ein Safe-Tipp ausgewählt?
+        </h2>
+
+        <div className="mt-5 grid gap-4 md:grid-cols-3">
+          <MethodCard
+            number="01"
+            title="Modellanalyse"
+            text="Das ZEVYQ-Modell berechnet Wahrscheinlichkeiten für verschiedene Märkte."
+          />
+
+          <MethodCard
+            number="02"
+            title="Qualitätsfilter"
+            text="Nur Kandidaten, die definierte Qualitätskriterien erfüllen, werden berücksichtigt."
+          />
+
+          <MethodCard
+            number="03"
+            title="Safe-Auswahl"
+            text="Aus den geeigneten Kandidaten werden die konservativeren Empfehlungen ausgewählt."
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StatCard({
+  title,
+  value,
+  description,
+}: {
+  title: string;
+  value: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+      <div className="text-sm text-white/40">{title}</div>
+
+      <div className="mt-3 text-3xl font-bold">
+        {value}
+      </div>
+
+      <div className="mt-2 text-xs text-white/30">
+        {description}
+      </div>
+    </div>
+  );
+}
+
+function Metric({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
+      <div className="text-xs text-white/30">
+        {label}
+      </div>
+
+      <div className="mt-1 text-lg font-semibold">
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function MethodCard({
+  number,
+  title,
+  text,
+}: {
+  number: string;
+  title: string;
+  text: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
+      <div className="text-xs font-semibold tracking-[0.2em] text-white/30">
+        {number}
+      </div>
+
+      <h3 className="mt-4 font-semibold">
+        {title}
+      </h3>
+
+      <p className="mt-2 text-sm leading-6 text-white/40">
+        {text}
+      </p>
+    </div>
+  );
+}
