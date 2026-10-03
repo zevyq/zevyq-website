@@ -1,5 +1,6 @@
 ﻿import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ZEVYQ – KI-Sportwetten & Fußballtipps",
-  description: "ZEVYQ analysiert Fußballspiele datenbasiert mit KI und klaren Qualitätsregeln. Entdecke fundierte Fußballtipps, Sportwetten-Analysen und ZEVYQ.",
+  description:
+    "ZEVYQ analysiert Fußballspiele datenbasiert mit KI und klaren Qualitätsregeln. Entdecke fundierte Fußballtipps, Sportwetten-Analysen und ZEVYQ.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -23,8 +25,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="de"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
-
