@@ -177,6 +177,10 @@ export default function HistoryPage() {
         throw new Error("Deine Anmeldedaten konnten nicht gelesen werden. Bitte melde dich erneut an.");
       }
 
+      if (!storedUser || !token) {
+        throw new Error("Bitte melde dich erneut an, um deine persönliche Tipp-Historie zu sehen.");
+      }
+
       if (storedUser && token) {
         setPersonalMode(true);
         const response = await fetch(
