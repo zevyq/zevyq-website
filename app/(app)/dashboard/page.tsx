@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001";
 
 type AuthUser = {
   user_id: string;
@@ -38,6 +38,7 @@ type TipsResponse = {
   analysis_date_to: string;
   tip_count: number;
   tips: Tip[];
+  published_tips?: Tip[];
 };
 
 export default function DashboardPage() {
@@ -63,7 +64,11 @@ export default function DashboardPage() {
         setLoadingTips(true);
         setTipsError("");
 
-        const response = await fetch(`${API_URL}/analysis/tips`);
+        const token = localStorage.getItem("zevyq_access_token");
+        const response = await fetch(`${API_URL}/analysis/tips`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          cache: "no-store",
+        });
 
         if (!response.ok) {
           throw new Error("Die KI-Tipps konnten nicht geladen werden.");
@@ -75,7 +80,7 @@ export default function DashboardPage() {
           throw new Error("Die ZEVYQ-Analyse war nicht erfolgreich.");
         }
 
-        setTips(data.tips || []);
+        setTips(data.published_tips ?? data.tips ?? []);
       } catch (error) {
         setTipsError(
           error instanceof Error

@@ -62,10 +62,19 @@ export default function StatisticsPage() {
 
       setUser(parsedUser);
 
+      const token = localStorage.getItem("zevyq_access_token");
+      if (!token) {
+        throw new Error("Bitte melde dich erneut an, um deine Statistiken zu sehen.");
+      }
+
       const response = await fetch(
-        `${API_URL}/users/${parsedUser.user_id}/bankroll`,
+        `${API_URL}/users/${encodeURIComponent(parsedUser.user_id)}/bankroll`,
         {
           cache: "no-store",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         },
       );
 
