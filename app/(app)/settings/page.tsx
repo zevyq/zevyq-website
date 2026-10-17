@@ -1,307 +1,232 @@
+"use client";
+
+import { useState } from "react";
+
 const plans = [
   {
-    name: "ZEVYQ Basic",
-    price: "14,99 €",
-    description: "Zugang zu den wichtigsten ZEVYQ-Analysen.",
-    features: [
-      "KI-Tipps",
-      "Safe & Value",
-      "Tipp-Historie",
-    ],
-    current: false,
+    name: "FREE",
+    price: "0 €",
+    period: "dauerhaft",
+    description: "Der kostenlose Einstieg in ZEVYQ.",
+    features: ["ZEVYQ kennenlernen", "Kostenloser Zugang"],
+    accent: false,
   },
   {
-    name: "ZEVYQ Premium",
-    price: "19,99 €",
+    name: "PREMIUM",
+    price: "14,99 €",
+    period: "/ Monat",
     description: "Der vollständige ZEVYQ-Zugang.",
     features: [
       "Alle KI-Tipps",
-      "Safe, Value & Verdoppler",
+      "Safe, Value und Verdoppler",
       "Best Tip",
-      "Persönliche Statistik",
-      "Bankroll-Tracking",
-      "Tipp nachgespielt",
+      "Statistik und Bankroll-Tracking",
+      "Tipp-Historie",
     ],
-    current: true,
+    accent: true,
+  },
+  {
+    name: "PREMIUM JAHR",
+    price: "119,99 €",
+    period: "/ Jahr",
+    description: "Premium-Zugang zum Jahrespreis.",
+    features: [
+      "Alle Premium-Funktionen",
+      "Zugang für ein Jahr",
+    ],
+    accent: false,
   },
 ];
 
 export default function SettingsPage() {
+  const [promoCode, setPromoCode] = useState("");
+  const [promoMessage, setPromoMessage] = useState("");
+  const [promoError, setPromoError] = useState(false);
+  const [promoLoading, setPromoLoading] = useState(false);
+
+  async function redeemPromoCode() {
+    const code = promoCode.trim().toUpperCase();
+    if (!code || promoLoading) return;
+
+    const token = localStorage.getItem("zevyq_access_token");
+    const storedUser = localStorage.getItem("zevyq_user");
+
+    if (!token || !storedUser) {
+      setPromoError(true);
+      setPromoMessage("Bitte melde dich erneut an.");
+      return;
+    }
+
+    let user;
+    try {
+      user = JSON.parse(storedUser);
+    } catch {
+      setPromoError(true);
+      setPromoMessage("Deine Sitzung ist ungültig. Bitte melde dich erneut an.");
+      return;
+    }
+
+    if (!user?.user_id) {
+      setPromoError(true);
+      setPromoMessage("Dein Benutzerkonto konnte nicht erkannt werden.");
+      return;
+    }
+
+    setPromoLoading(true);
+    setPromoMessage("");
+    setPromoError(false);
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001";
+      const response = await fetch(
+        `${apiUrl}/users/${encodeURIComponent(user.user_id)}/promo/redeem`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ code }),
+        },
+      );
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(result?.detail || "Der Promo-Code konnte nicht eingelöst werden.");
+      }
+
+      setPromoCode("");
+      setPromoMessage(
+        `Code erfolgreich eingelöst! Premium für ${result.premium_days} Tage aktiviert.`,
+      );
+    } catch (error) {
+      setPromoError(true);
+      setPromoMessage(
+        error instanceof Error
+          ? error.message
+          : "Der Promo-Code konnte nicht eingelöst werden.",
+      );
+    } finally {
+      setPromoLoading(false);
+    }
+  }
   return (
-    <div className="px-6 py-10 lg:px-10">
-      <div className="mx-auto max-w-6xl">
-        {/* Header */}
-        <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-          <div>
-            <div className="mb-2 text-sm text-white/40">
-              ZEVYQ Konto
-            </div>
+    <main className="px-4 py-8 sm:px-6 sm:py-10 lg:px-10">
+      <div className="mx-auto max-w-5xl">
+        <header className="mb-8">
+          <p className="mb-2 text-sm text-blue-400">ZEVYQ Konto</p>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Abo & Mitgliedschaft
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-white/50">
+            Entdecke die verfügbaren Mitgliedschaften und ihre Leistungen.
+          </p>
+        </header>
 
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Abo & Einstellungen
-            </h1>
-
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/50">
-              Verwalte dein ZEVYQ-Abonnement, deine Kontodaten und deine
-              persönlichen Einstellungen.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 px-4 py-3 text-xs text-yellow-400">
-            Demo-Daten – Abrechnung folgt
-          </div>
-        </div>
-
-        {/* Current subscription */}
-        <section className="rounded-2xl border border-white/10 bg-white/[0.02]">
-          <div className="border-b border-white/10 px-6 py-5">
-            <div className="text-xs uppercase tracking-[0.18em] text-white/30">
-              Aktuelles Abo
-            </div>
-
-            <h2 className="mt-2 text-xl font-semibold">
-              ZEVYQ Premium
-            </h2>
-
+        <section>
+          <div className="mb-5">
+            <h2 className="text-xl font-semibold">Unsere Tarife</h2>
             <p className="mt-1 text-sm text-white/40">
-              Dein vollständiger Zugang zur ZEVYQ-Plattform.
+              Wähle den Zugang, der zu dir passt.
             </p>
           </div>
 
-          <div className="grid gap-6 px-6 py-6 md:grid-cols-3">
-            <div>
-              <div className="text-xs text-white/35">
-                Status
-              </div>
-
-              <div className="mt-2">
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium">
-                  Aktiv
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <div className="text-xs text-white/35">
-                Monatlicher Preis
-              </div>
-
-              <div className="mt-2 text-lg font-semibold">
-                19,99 €
-              </div>
-            </div>
-
-            <div>
-              <div className="text-xs text-white/35">
-                Nächste Abrechnung
-              </div>
-
-              <div className="mt-2 text-lg font-semibold">
-                24.10.2026
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Plans */}
-        <section className="mt-6">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold">
-              Abonnement
-            </h2>
-
-            <p className="mt-1 text-sm text-white/40">
-              Wähle später den passenden Zugang für deinen ZEVYQ-Account.
-            </p>
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-5 md:grid-cols-3">
             {plans.map((plan) => (
-              <div
+              <article
                 key={plan.name}
-                className={`rounded-2xl border p-6 ${
-                  plan.current
-                    ? "border-white/20 bg-white/[0.04]"
-                    : "border-white/10 bg-white/[0.02]"
+                className={`flex flex-col rounded-3xl border p-6 sm:p-7 ${
+                  plan.accent
+                    ? "border-blue-500/40 bg-blue-500/[0.06]"
+                    : "border-white/[0.09] bg-white/[0.02]"
                 }`}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h3 className="text-lg font-semibold">
-                      {plan.name}
-                    </h3>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold">{plan.name}</h3>
+                  <p className="mt-2 min-h-10 text-sm leading-5 text-white/45">
+                    {plan.description}
+                  </p>
 
-                    <p className="mt-2 text-sm text-white/40">
-                      {plan.description}
-                    </p>
+                  <div className="mt-6 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <span className="text-3xl font-bold tracking-tight">
+                      {plan.price}
+                    </span>
+                    <span className="text-sm text-white/40">
+                      {plan.period}
+                    </span>
                   </div>
 
-                  {plan.current && (
-                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs">
-                      Aktuell
-                    </span>
-                  )}
+                  <div className="my-6 h-px bg-white/10" />
+
+                  <ul className="space-y-3">
+                    {plan.features.map((feature) => (
+                      <li
+                        key={feature}
+                        className="flex items-start gap-3 text-sm text-white/65"
+                      >
+                        <span className="mt-0.5 text-blue-400" aria-hidden="true">
+                          ✓
+                        </span>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                <div className="mt-6">
-                  <span className="text-3xl font-bold">
-                    {plan.price}
-                  </span>
-
-                  <span className="ml-2 text-sm text-white/35">
-                    / Monat
-                  </span>
-                </div>
-
-                <div className="mt-6 space-y-3">
-                  {plan.features.map((feature) => (
-                    <div
-                      key={feature}
-                      className="flex items-center gap-3 text-sm text-white/60"
-                    >
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full border border-white/10 text-xs">
-                        ✓
-                      </span>
-
-                      {feature}
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  type="button"
-                  disabled={plan.current}
-                  className={`mt-7 w-full rounded-xl px-4 py-3 text-sm font-medium transition ${
-                    plan.current
-                      ? "cursor-default border border-white/10 bg-white/5 text-white/40"
-                      : "border border-white/15 bg-white text-black hover:bg-white/90"
+                <div
+                  className={`mt-7 rounded-xl px-4 py-3 text-center text-sm font-medium ${
+                    plan.accent
+                      ? "border border-blue-500/30 bg-blue-500/10 text-blue-300"
+                      : "border border-white/10 bg-white/[0.03] text-white/50"
                   }`}
                 >
-                  {plan.current
-                    ? "Aktuelles Abo"
-                    : "Plan auswählen"}
-                </button>
-              </div>
+                  {plan.name === "FREE" ? "Kostenlos" : "Tarifübersicht"}
+                </div>
+              </article>
             ))}
           </div>
         </section>
 
-        {/* Account */}
-        <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02]">
-          <div className="border-b border-white/10 px-6 py-5">
-            <h2 className="text-xl font-semibold">
-              Kontodaten
-            </h2>
-
-            <p className="mt-1 text-sm text-white/40">
-              Deine persönlichen Zugangsdaten.
-            </p>
-          </div>
-
-          <div className="grid gap-6 px-6 py-6 md:grid-cols-2">
-            <div>
-              <label className="text-xs text-white/35">
-                Name
-              </label>
-
-              <input
-                type="text"
-                defaultValue="Malte"
-                className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none placeholder:text-white/20 focus:border-white/25"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs text-white/35">
-                E-Mail
-              </label>
-
-              <input
-                type="email"
-                defaultValue="malte@zevyq.de"
-                className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none placeholder:text-white/20 focus:border-white/25"
-              />
-            </div>
-          </div>
-
-          <div className="border-t border-white/10 px-6 py-5">
-            <button
-              type="button"
-              className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-black hover:bg-white/90"
-            >
-              Änderungen speichern
-            </button>
-          </div>
-        </section>
-
-        {/* Notifications */}
-        <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02]">
-          <div className="border-b border-white/10 px-6 py-5">
-            <h2 className="text-xl font-semibold">
-              Benachrichtigungen
-            </h2>
-
-            <p className="mt-1 text-sm text-white/40">
-              Lege später fest, welche ZEVYQ-Informationen du erhalten
-              möchtest.
-            </p>
-          </div>
-
-          <div className="divide-y divide-white/10">
-            <div className="flex items-center justify-between gap-5 px-6 py-5">
-              <div>
-                <div className="font-medium">
-                  Neue KI-Tipps
-                </div>
-
-                <div className="mt-1 text-sm text-white/40">
-                  Benachrichtigung bei neuen ZEVYQ-Tipps.
-                </div>
-              </div>
-
-              <div className="h-6 w-11 rounded-full bg-white/20 p-1">
-                <div className="h-4 w-4 rounded-full bg-white" />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between gap-5 px-6 py-5">
-              <div>
-                <div className="font-medium">
-                  Ergebnis-Updates
-                </div>
-
-                <div className="mt-1 text-sm text-white/40">
-                  Ergebnisse deiner gespeicherten Tipps.
-                </div>
-              </div>
-
-              <div className="h-6 w-11 rounded-full bg-white/10 p-1">
-                <div className="h-4 w-4 rounded-full bg-white/60" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Danger zone */}
-        <section className="mt-6 rounded-2xl border border-red-500/20 bg-red-500/[0.02] p-6">
-          <h2 className="font-semibold text-red-300">
-            Konto
-          </h2>
-
-          <p className="mt-2 text-sm leading-6 text-white/40">
-            Die Funktionen zum Abmelden, Kündigen und Löschen des
-            Accounts werden mit dem echten Benutzer- und
-            Abrechnungssystem verbunden.
+        <section className="mt-8 rounded-3xl border border-white/[0.09] bg-white/[0.02] p-6 sm:p-7">
+          <h2 className="text-xl font-semibold">Promo-Code einlösen</h2>
+          <p className="mt-2 text-sm text-white/50">
+            Du hast einen Promo-Code? Gib ihn hier ein, um deinen Premium-Zugang zu aktivieren.
           </p>
-
-          <button
-            type="button"
-            className="mt-5 rounded-xl border border-red-500/20 px-4 py-3 text-sm text-red-300"
+          <form
+            className="mt-5 flex flex-col gap-3 sm:flex-row"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void redeemPromoCode();
+            }}
           >
-            Abmelden
-          </button>
+            <input
+              value={promoCode}
+              onChange={(event) => setPromoCode(event.target.value.toUpperCase())}
+              placeholder="PROMO-CODE"
+              aria-label="Promo-Code"
+              autoComplete="off"
+              className="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:border-blue-500/60"
+              maxLength={80}
+            />
+            <button
+              type="submit"
+              disabled={promoLoading || !promoCode.trim()}
+              className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {promoLoading ? "Wird eingelöst …" : "Code einlösen"}
+            </button>
+          </form>
+          {promoMessage && (
+            <p
+              role="status"
+              className={`mt-4 text-sm ${promoError ? "text-red-300" : "text-emerald-300"}`}
+            >
+              {promoMessage}
+            </p>
+          )}
         </section>
       </div>
-    </div>
+    </main>
   );
 }

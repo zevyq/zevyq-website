@@ -123,7 +123,7 @@ export default function ProfilePage() {
                   </span>
                   {isPro && (
                     <span className="rounded-full border border-blue-300/30 bg-blue-400/10 px-2.5 py-1 text-[10px] font-bold tracking-wider text-blue-200">
-                      PRO MEMBER
+                      PREMIUM MEMBER
                     </span>
                   )}
                 </div>
