@@ -3,21 +3,20 @@ import LegalPage from "../components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Allgemeine Geschäftsbedingungen | ZEVYQ",
-  description: "Entwurf der Allgemeinen Geschäftsbedingungen von ZEVYQ.",
+  description: "Allgemeine Geschäftsbedingungen für ZEVYQ.",
   robots: { index: false, follow: false },
 };
 
 export default function AGBPage() {
   return (
     <LegalPage title="Allgemeine Geschäftsbedingungen">
-      <aside className="rounded-2xl border border-amber-400/40 bg-amber-500/10 p-5 text-amber-100">
-        <h2 className="text-lg font-bold">Entwurf – noch nicht veröffentlichen</h2>
+            <aside className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-5 text-slate-200">
+        <h2 className="text-lg font-bold">Hinweis zu Website-Abonnements</h2>
         <p>
-          Diese Bedingungen sind noch nicht zur Verwendung freigegeben.
-          Vertragsabschluss, Preis- und Steuerdarstellung, Verlängerung,
-          Kündigungsablauf und Checkout müssen vor dem Start mit der
-          tatsächlichen technischen Umsetzung und den gesetzlichen
-          Verbraucheranforderungen abgeglichen werden.
+          Der kostenpflichtige Website-Checkout ist derzeit noch nicht aktiviert.
+          Ein Website-Abonnement kann aktuell nicht über die Website abgeschlossen
+          werden. Vor einer Aktivierung werden Preis, Laufzeit, Verlängerung,
+          Kündigung und Zahlungsbedingungen bei der Bestellung angezeigt.
         </p>
       </aside>
 
@@ -28,7 +27,7 @@ export default function AGBPage() {
           Panoramastraße 5, 91555 Feuchtwangen, Deutschland.
         </p>
         <p>
-          Diese Allgemeinen Geschäftsbedingungen sollen die Nutzung der
+          Diese Allgemeinen Geschäftsbedingungen regeln die Nutzung der
           ZEVYQ-Website und der darüber angebotenen digitalen Dienste regeln.
           Abweichende oder ergänzende Bedingungen gelten nur, soweit sie
           wirksam vereinbart wurden.

@@ -3,20 +3,21 @@ import LegalPage from "../components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Abo- und Zahlungsbedingungen | ZEVYQ",
-  description: "Entwurf der Abo- und Zahlungsbedingungen von ZEVYQ.",
+  description: "Abo- und Zahlungsbedingungen für ZEVYQ.",
   robots: { index: false, follow: false },
 };
 
 export default function ZahlungsbedingungenPage() {
   return (
     <LegalPage title="Abo- und Zahlungsbedingungen">
-      <aside className="rounded-2xl border border-amber-400/40 bg-amber-500/10 p-5 text-amber-100">
-        <h2 className="text-lg font-bold">Entwurf – noch nicht veröffentlichen</h2>
+            <aside className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-5 text-slate-200">
+        <h2 className="text-lg font-bold">Hinweis zu Website-Abonnements</h2>
         <p>
-          Vor der Veröffentlichung müssen insbesondere der tatsächliche
-          Checkout-Ablauf, die automatische Verlängerung, die Kündigungsfunktion,
-          die steuerliche Preisangabe und die Freischaltung nach erfolgreicher
-          Zahlung mit der technischen Umsetzung abgeglichen werden.
+          Der Website-Checkout ist derzeit noch nicht aktiviert. Sobald
+          Website-Abonnements angeboten werden, werden der verbindliche
+          Gesamtpreis, der Abrechnungszeitraum, die Verlängerung, die
+          Kündigung und die angebotenen Zahlungsmethoden vor der Bestellung
+          angezeigt.
         </p>
       </aside>
 

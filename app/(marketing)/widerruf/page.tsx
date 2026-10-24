@@ -3,20 +3,20 @@ import LegalPage from "../components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Widerrufsbelehrung | ZEVYQ",
-  description: "Entwurf der Widerrufsinformationen für ZEVYQ.",
+  description: "Widerrufsinformationen für ZEVYQ.",
   robots: { index: false, follow: false },
 };
 
 export default function WiderrufPage() {
   return (
     <LegalPage title="Widerrufsbelehrung">
-      <aside className="rounded-2xl border border-amber-400/40 bg-amber-500/10 p-5 text-amber-100">
-        <h2 className="text-lg font-bold">Entwurf – noch nicht veröffentlichen</h2>
+            <aside className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-5 text-slate-200">
+        <h2 className="text-lg font-bold">Hinweis zu Website-Abonnements</h2>
         <p>
-          Vor dem Verkaufsstart müssen diese Informationen an die endgültige
-          Vertragsart angepasst und rechtlich geprüft werden. Insbesondere
-          muss eine gegebenenfalls erforderliche elektronische
-          Widerrufsfunktion tatsächlich implementiert und getestet sein.
+          Der kostenpflichtige Website-Checkout ist derzeit noch nicht aktiviert.
+          Bevor Website-Abonnements angeboten werden, wird die gesetzlich
+          erforderliche elektronische Widerrufsfunktion einschließlich
+          Eingangsbestätigung bereitgestellt.
         </p>
       </aside>
 
