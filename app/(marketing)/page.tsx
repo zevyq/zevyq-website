@@ -410,10 +410,22 @@ export default function MarketingPage() {
 
       {/* Footer */}
       <footer className="border-t border-white/10 bg-[#02040b]">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-          <div className="font-black tracking-tight text-white">ZEVYQ</div>
-          <div>Sports Intelligence</div>
-          <div>© {new Date().getFullYear()} ZEVYQ</div>
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-8 text-sm lg:px-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="font-black tracking-tight text-white">ZEVYQ</div>
+            <div className="text-slate-600">Sports Intelligence</div>
+            <div className="text-slate-600">© {new Date().getFullYear()} ZEVYQ</div>
+          </div>
+          <nav
+            aria-label="Rechtliche Informationen"
+            className="flex flex-wrap gap-x-5 gap-y-3 text-slate-400"
+          >
+            <a className="transition hover:text-white" href="/impressum">Impressum</a>
+            <a className="transition hover:text-white" href="/datenschutz">Datenschutz</a>
+            <a className="transition hover:text-white" href="/agb">AGB</a>
+            <a className="transition hover:text-white" href="/zahlungsbedingungen">Abo &amp; Zahlungsbedingungen</a>
+            <a className="transition hover:text-white" href="/widerruf">Widerruf</a>
+          </nav>
         </div>
       </footer>
     </main>
