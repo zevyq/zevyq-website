@@ -73,6 +73,10 @@ export default function LoginPage() {
         localStorage.setItem("zevyq_user", JSON.stringify(user));
       }
 
+      if (mode === "login" && typeof data?.access_token === "string") {
+        localStorage.setItem("zevyq_access_token", data.access_token);
+      }
+
       if (mode === "login") {
         setSuccess("Login erfolgreich. Du wirst zum Dashboard weitergeleitet.");
 
