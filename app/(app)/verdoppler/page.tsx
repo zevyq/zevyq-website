@@ -1,9 +1,11 @@
 "use client";
 
+import { authStorage } from "../../auth-storage";
+
 import { useEffect, useMemo, useState } from "react";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001";
 
 type Tip = {
   id: number;
@@ -27,6 +29,7 @@ type TipsResponse = {
   success: boolean;
   source?: string;
   tips?: Tip[];
+  published_tips?: Tip[];
 };
 
 function normalizeCategory(category: string) {
@@ -82,7 +85,9 @@ export default function VerdopplerPage() {
     setError("");
 
     try {
+      const token = authStorage.getItem("zevyq_access_token");
       const response = await fetch(`${API_URL}/analysis/tips`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         method: "GET",
         cache: "no-store",
       });
@@ -97,7 +102,7 @@ export default function VerdopplerPage() {
         );
       }
 
-      setTips(data.tips ?? []);
+      setTips(data.published_tips ?? data.tips ?? []);
     } catch (err) {
       if (err instanceof TypeError) {
         setError(
@@ -210,31 +215,20 @@ export default function VerdopplerPage() {
 
         {/* No Verdoppler */}
         {!loading && !error && verdopplerTips.length === 0 && (
-          <div className="rounded-2xl border border-yellow-500/20 bg-yellow-500/[0.03] p-8">
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-yellow-400/70">
-              Aktuell kein Verdoppler
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8">
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/30">
+              ZEVYQ QUALITY CHECK
             </div>
-
-            <h2 className="mt-3 text-2xl font-semibold">
-              Keine qualifizierte Verdoppler-Kombination vorhanden
+            <h2 className="mt-3 text-xl font-semibold">
+              Aktuell kein qualifizierter Verdoppler
             </h2>
-
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-white/40">
-              Die aktuelle ZEVYQ V5.6 Analyse hat für den aktuellen
-              Analysezeitraum keinen Markt als Verdoppler qualifiziert.
-              Deshalb wird bewusst keine künstliche Kombination aus
-              einzelnen Tipps erstellt.
+            <p className="mt-2 text-sm leading-6 text-white/40">
+              Die ZEVYQ-Engine hat im aktuellen Analysezeitraum keine Verdoppler-Kombination qualifiziert.
             </p>
-
-            <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] p-5">
-              <div className="text-sm font-medium">
-                ZEVYQ Qualitätsprinzip
-              </div>
-
+            <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] p-5 text-left">
+              <div className="text-sm font-medium">Qualit&auml;t vor Quantit&auml;t</div>
               <p className="mt-2 text-sm leading-6 text-white/35">
-                Ein Verdoppler wird erst angezeigt, wenn die Backend-Engine
-                die dafür erforderlichen Märkte tatsächlich als
-                Verdoppler qualifiziert.
+                Wir zeigen nur Kombinationen an, welche die Qualit&auml;tskriterien der Engine erf&uuml;llen. Es werden keine Kombinationen k&uuml;nstlich erzeugt.
               </p>
             </div>
           </div>
@@ -247,7 +241,7 @@ export default function VerdopplerPage() {
               <a
                 key={tip.id}
                 href={`/tips/${tip.id}`}
-                className="group block rounded-3xl border border-white/10 bg-white/[0.02] p-7 transition hover:border-white/20 hover:bg-white/[0.04]"
+                className="group block rounded-3xl border border-[#E27B19]/80 bg-white/[0.02] p-7 transition hover:border-[#E27B19] hover:bg-white/[0.04]"
               >
                 {/* Combination Header */}
                 <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">

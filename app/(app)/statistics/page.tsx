@@ -1,5 +1,7 @@
 "use client";
 
+import { authStorage } from "../../auth-storage";
+
 import { useEffect, useState } from "react";
 
 const API_URL =
@@ -50,7 +52,7 @@ export default function StatisticsPage() {
     setError("");
 
     try {
-      const storedUser = localStorage.getItem("zevyq_user");
+      const storedUser = authStorage.getItem("zevyq_user");
 
       if (!storedUser) {
         throw new Error(
@@ -62,10 +64,19 @@ export default function StatisticsPage() {
 
       setUser(parsedUser);
 
+      const token = authStorage.getItem("zevyq_access_token");
+      if (!token) {
+        throw new Error("Bitte melde dich erneut an, um deine Statistiken zu sehen.");
+      }
+
       const response = await fetch(
-        `${API_URL}/users/${parsedUser.user_id}/bankroll`,
+        `${API_URL}/users/${encodeURIComponent(parsedUser.user_id)}/bankroll`,
         {
           cache: "no-store",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         },
       );
 

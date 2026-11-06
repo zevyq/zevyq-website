@@ -6,6 +6,8 @@ const legalLinks = [
   { href: "/agb", label: "AGB" },
   { href: "/zahlungsbedingungen", label: "Abo & Zahlungsbedingungen" },
   { href: "/widerruf", label: "Widerruf" },
+  { href: "/vertrag", label: "Verträge hier kündigen" },
+  { href: "/vertrag?art=widerruf", label: "Vertrag widerrufen" },
 ];
 
 type LegalPageProps = {
@@ -46,7 +48,7 @@ export default function LegalPage({ title, children }: LegalPageProps) {
           {title}
         </h1>
         <p className="mt-4 text-xs text-slate-500">
-          Stand: 24. Oktober 2026
+          Stand: 4. November 2026
         </p>
 
         <div className="mt-10 space-y-8 text-sm leading-7 text-slate-300 [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-white [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-white [&_p]:mt-3 [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_a]:text-blue-400 [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-blue-300">

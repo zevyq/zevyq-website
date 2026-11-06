@@ -1,9 +1,11 @@
 "use client";
 
+import { authStorage } from "../../auth-storage";
+
 import { useEffect, useState } from "react";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001";
 
 type Tip = {
   id: number;
@@ -27,6 +29,8 @@ type TipsResponse = {
   success: boolean;
   tip_count: number;
   tips: Tip[];
+  published_tips?: Tip[];
+  user_plan?: string;
 };
 
 function formatProbability(value: number) {
@@ -44,6 +48,7 @@ export default function ValuePage() {
   const [tips, setTips] = useState<Tip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isPremium, setIsPremium] = useState<boolean | null>(null);
 
   useEffect(() => {
     async function loadTips() {
@@ -51,7 +56,9 @@ export default function ValuePage() {
         setLoading(true);
         setError("");
 
+        const token = authStorage.getItem("zevyq_access_token");
         const response = await fetch(`${API_URL}/analysis/tips`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
           cache: "no-store",
         });
 
@@ -65,7 +72,15 @@ export default function ValuePage() {
           throw new Error("Die ZEVYQ-Analyse war nicht erfolgreich.");
         }
 
-        const valueTips = (data.tips || []).filter(
+        const plan = String(data.user_plan ?? "").toUpperCase();
+        const premium = plan.includes("PREMIUM") || plan === "PRO";
+        setIsPremium(premium);
+
+        if (!premium) {
+          setTips([]);
+          return;
+        }
+        const valueTips = (data.published_tips ?? data.tips ?? []).filter(
           (tip) => tip.category.toUpperCase() === "VALUE",
         );
 
@@ -147,7 +162,17 @@ export default function ValuePage() {
           </div>
         )}
 
+        {!loading && !error && isPremium === false && (
+          <div className="mb-8 rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] p-8">
+            <div className="text-2xl" aria-hidden="true">🔒</div>
+            <h2 className="mt-3 text-xl font-semibold">Value-Tipps sind Premium</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/45">
+              Mit ZEVYQ Premium erhältst du Zugriff auf die Value-Tipps und die weiteren Tipp-Kategorien. Dein täglicher Free-Tipp bleibt weiterhin verfügbar.
+            </p>
+          </div>
+        )}
         {/* Stats */}
+        {isPremium === true && (
         <div className="mb-8 grid gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
             <div className="text-xs uppercase tracking-[0.18em] text-white/30">
@@ -199,9 +224,10 @@ export default function ValuePage() {
             </p>
           </div>
         </div>
+        )}
 
         {/* Loading */}
-        {loading && (
+        {isPremium === true && loading && (
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-10 text-center">
             <div className="text-lg font-semibold">
               ZEVYQ analysiert aktuelle Spiele…
@@ -214,27 +240,34 @@ export default function ValuePage() {
         )}
 
         {/* Empty */}
-        {!loading && !error && tips.length === 0 && (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-10 text-center">
-            <div className="text-lg font-semibold">
-              Aktuell kein Value-Tipp
+        {isPremium === true && !loading && !error && tips.length === 0 && (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8">
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/30">
+              ZEVYQ QUALITY CHECK
             </div>
-
-            <p className="mt-2 text-sm leading-6 text-white/35">
-              Für den aktuellen Analysezeitraum wurde kein Markt als Value
-              qualifiziert.
+            <h2 className="mt-3 text-xl font-semibold">
+              Aktuell kein qualifizierter Value-Tipp
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-white/40">
+              Die ZEVYQ-Engine hat im aktuellen Analysezeitraum keinen Value-Tipp qualifiziert.
             </p>
+            <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] p-5 text-left">
+              <div className="text-sm font-medium">Qualit&auml;t vor Quantit&auml;t</div>
+              <p className="mt-2 text-sm leading-6 text-white/35">
+                Wir zeigen nur Tipps an, welche die Qualit&auml;tskriterien der Engine erf&uuml;llen. Es werden keine Tipps k&uuml;nstlich erzeugt.
+              </p>
+            </div>
           </div>
         )}
 
         {/* Value Tips */}
-        {!loading && tips.length > 0 && (
+        {isPremium === true && !loading && tips.length > 0 && (
           <div className="space-y-4">
             {tips.map((tip) => (
               <a
                 key={tip.id}
                 href={`/tips/${tip.id}`}
-                className="group block rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition hover:border-white/20 hover:bg-white/[0.04]"
+                className="group block rounded-2xl border border-[#2774D8]/80 bg-white/[0.02] p-6 transition hover:border-[#2774D8] hover:bg-white/[0.04]"
               >
                 <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
                   <div className="min-w-0 flex-1">

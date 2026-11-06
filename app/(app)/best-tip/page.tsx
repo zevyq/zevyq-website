@@ -1,9 +1,12 @@
 "use client";
 
+import { authStorage } from "../../auth-storage";
+
 import { useEffect, useMemo, useState } from "react";
+import { getCategoryTextColor } from "../category-colors";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001";
 
 type Tip = {
   id: number;
@@ -30,15 +33,8 @@ type TipsResponse = {
   analysis_date_to?: string;
   tip_count?: number;
   tips?: Tip[];
+  published_tips?: Tip[];
 };
-
-const categories = [
-  "ALLE",
-  "SAFE",
-  "VALUE",
-  "VERDOPPLER",
-  "BEST TIP",
-];
 
 function normalizeCategory(category: string) {
   return category.trim().toUpperCase();
@@ -96,7 +92,6 @@ function formatValue(value: number) {
 
 export default function TipsPage() {
   const [tips, setTips] = useState<Tip[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("ALLE");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -106,7 +101,9 @@ export default function TipsPage() {
     setError("");
 
     try {
+      const token = authStorage.getItem("zevyq_access_token");
       const response = await fetch(`${API_URL}/analysis/tips`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         method: "GET",
         cache: "no-store",
       });
@@ -121,7 +118,11 @@ export default function TipsPage() {
         );
       }
 
-      setTips(data.tips ?? []);
+      setTips(
+        (data.published_tips ?? data.tips ?? []).filter(
+          (tip) => normalizeCategory(tip.category) === "BEST TIP"
+        )
+      );
     } catch (err) {
       if (err instanceof TypeError) {
         setError(
@@ -145,43 +146,32 @@ export default function TipsPage() {
     loadTips();
   }, []);
 
-  const filteredTips = useMemo(() => {
-    if (selectedCategory === "ALLE") {
-      return tips;
-    }
-
-    return tips.filter(
-      (tip) =>
-        normalizeCategory(tip.category) ===
-        normalizeCategory(selectedCategory),
-    );
-  }, [tips, selectedCategory]);
 
   const averageProbability = useMemo(() => {
-    if (filteredTips.length === 0) {
+    if (tips.length === 0) {
       return 0;
     }
 
-    const total = filteredTips.reduce(
+    const total = tips.reduce(
       (sum, tip) => sum + tip.model_probability,
       0,
     );
 
-    return (total / filteredTips.length) * 100;
-  }, [filteredTips]);
+    return (total / tips.length) * 100;
+  }, [tips]);
 
   const averageValue = useMemo(() => {
-    if (filteredTips.length === 0) {
+    if (tips.length === 0) {
       return 0;
     }
 
-    const total = filteredTips.reduce(
+    const total = tips.reduce(
       (sum, tip) => sum + tip.value,
       0,
     );
 
-    return total / filteredTips.length;
-  }, [filteredTips]);
+    return total / tips.length;
+  }, [tips]);
 
   return (
     <section className="px-6 py-10 lg:px-10">
@@ -255,32 +245,8 @@ export default function TipsPage() {
           </div>
         )}
 
-        {/* Category Filter */}
-        <div className="mb-8 flex flex-wrap gap-2">
-          {categories.map((category) => {
-            const active = selectedCategory === category;
-
-            return (
-              <button
-                key={category}
-                type="button"
-                onClick={() => setSelectedCategory(category)}
-                className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition ${
-                  active
-                    ? "border-white bg-white text-black"
-                    : "border-white/10 bg-white/[0.02] text-white/45 hover:border-white/20 hover:text-white"
-                }`}
-              >
-                {category === "ALLE"
-                  ? `Alle ${tips.length}`
-                  : category}
-              </button>
-            );
-          })}
-        </div>
-
         {/* Summary */}
-        {!loading && filteredTips.length > 0 && (
+        {!loading && tips.length > 0 && (
           <div className="mb-8 grid gap-5 sm:grid-cols-3">
             <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
               <div className="text-xs uppercase tracking-[0.18em] text-white/30">
@@ -288,7 +254,7 @@ export default function TipsPage() {
               </div>
 
               <div className="mt-4 text-3xl font-bold">
-                {filteredTips.length}
+                {tips.length}
               </div>
 
               <p className="mt-2 text-sm text-white/35">
@@ -337,45 +303,40 @@ export default function TipsPage() {
         )}
 
         {/* Empty */}
-        {!loading && !error && filteredTips.length === 0 && (
+        {!loading && !error && tips.length === 0 && (
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8">
-            <div className="text-xs uppercase tracking-[0.2em] text-white/30">
-              Keine Tipps
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/30">
+              ZEVYQ QUALITY CHECK
             </div>
-
             <h2 className="mt-3 text-xl font-semibold">
-              Keine Tipps in dieser Kategorie
+              Aktuell keine qualifizierten Tipps
             </h2>
-
-            <p className="mt-2 text-sm text-white/35">
-              Für den aktuellen Analysezeitraum wurde kein qualifizierter
-              Tipp in dieser Kategorie gefunden.
+            <p className="mt-2 text-sm leading-6 text-white/40">
+              Im aktuellen Analysezeitraum hat die ZEVYQ-Engine keinen qualifizierten Best Tip gefunden.
             </p>
+            <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] p-5 text-left">
+              <div className="text-sm font-medium">Qualit&auml;t vor Quantit&auml;t</div>
+              <p className="mt-2 text-sm leading-6 text-white/35">
+                Wir zeigen nur Tipps an, welche die Qualit&auml;tskriterien der Engine erf&uuml;llen. Es werden keine Tipps k&uuml;nstlich erzeugt.
+              </p>
+            </div>
           </div>
         )}
 
         {/* Tips */}
-        {!loading && filteredTips.length > 0 && (
+        {!loading && tips.length > 0 && (
           <div className="space-y-4">
-            {filteredTips.map((tip) => (
+            {tips.map((tip) => (
               <a
                 key={tip.id}
                 href={`/tips/${tip.id}`}
-                className="group block rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition hover:border-white/20 hover:bg-white/[0.04]"
+                className="group block rounded-2xl border border-[#6652D9]/80 bg-white/[0.02] p-6 transition hover:border-[#6652D9] hover:bg-white/[0.04]"
               >
                 <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
                   {/* Match */}
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-3 text-xs text-white/35">
-                      <span
-                        className={
-                          normalizeCategory(tip.category) === "BEST TIP"
-                            ? "font-semibold text-white/70"
-                            : ""
-                        }
-                      >
-                        {formatCategory(tip.category)}
-                      </span>
+                      <span className={`font-semibold ${getCategoryTextColor(tip.category)}`}>{formatCategory(tip.category)}</span>
 
                       <span>•</span>
 

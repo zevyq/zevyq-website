@@ -10,15 +10,7 @@ export const metadata: Metadata = {
 export default function AGBPage() {
   return (
     <LegalPage title="Allgemeine Geschäftsbedingungen">
-            <aside className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-5 text-slate-200">
-        <h2 className="text-lg font-bold">Hinweis zu Website-Abonnements</h2>
-        <p>
-          Der kostenpflichtige Website-Checkout ist derzeit noch nicht aktiviert.
-          Ein Website-Abonnement kann aktuell nicht über die Website abgeschlossen
-          werden. Vor einer Aktivierung werden Preis, Laufzeit, Verlängerung,
-          Kündigung und Zahlungsbedingungen bei der Bestellung angezeigt.
-        </p>
-      </aside>
+            
 
       <section>
         <h2>1. Anbieter und Geltungsbereich</h2>
@@ -28,7 +20,7 @@ export default function AGBPage() {
         </p>
         <p>
           Diese Allgemeinen Geschäftsbedingungen regeln die Nutzung der
-          ZEVYQ-Website und der darüber angebotenen digitalen Dienste regeln.
+          ZEVYQ-Website und der darüber angebotenen digitalen Dienste.
           Abweichende oder ergänzende Bedingungen gelten nur, soweit sie
           wirksam vereinbart wurden.
         </p>
@@ -88,77 +80,15 @@ export default function AGBPage() {
         </p>
       </section>
 
-      <section>
-        <h2>5. Premium-Angebote und geplante Preise</h2>
-        <p>
-          Für kostenpflichtige Premium-Funktionen sind derzeit folgende
-          Abonnementpreise vorgesehen:
-        </p>
-        <ul>
-          <li>Premium monatlich: 14,99 € je Monat.</li>
-          <li>Premium jährlich: 119,99 € je Jahr.</li>
-        </ul>
-        <p>
-          Vor einer Bestellung müssen der tatsächlich geltende Endpreis,
-          etwaige Steuern, der Abrechnungszeitraum, die Laufzeit sowie die
-          Bedingungen einer Verlängerung und Kündigung eindeutig und
-          verständlich angezeigt werden. Die steuerliche Preisgestaltung
-          und die endgültige Checkout-Anzeige sind vor dem Start noch zu
-          bestätigen.
-        </p>
-        <p>
-          Welche Funktionen im Premium-Angebot enthalten sind, wird in
-          der jeweiligen Angebotsdarstellung beschrieben. Änderungen
-          abgeschlossener Verträge richten sich nach den gesetzlichen
-          Vorschriften und den wirksam vereinbarten Vertragsbedingungen.
-        </p>
-      </section>
+      <section><h2>5. Premium-Angebote und Preise</h2><p>Premium kostet regulär 14,99 € pro Monat oder 119,99 € pro Jahr. Der verbindliche Gesamtpreis, der Abrechnungszeitraum und etwaige Rabatte werden vor der Bestellung im Checkout angezeigt.</p>
+<p>Der Leistungsumfang ergibt sich aus der jeweiligen Angebotsdarstellung. Gesetzliche Rechte bleiben unberührt.</p></section>
 
-      <section>
-        <h2>6. Vertragsschluss und Zahlung über die Website</h2>
-        <p>
-          Website-Abonnements sollen über einen Online-Checkout angeboten
-          werden. Die verbindliche Bestellstrecke muss vor Abschluss alle
-          gesetzlich erforderlichen Informationen klar und verständlich
-          darstellen und eine eindeutige Bestätigung der Zahlungspflicht
-          verlangen.
-        </p>
-        <p>
-          Die Website-Zahlungen sind für eine spätere Abwicklung über Stripe
-          vorgesehen. Die tatsächliche Einbindung, der Zeitpunkt des
-          Vertragsschlusses, die Zahlungsbestätigung und die Freischaltung
-          der Premium-Funktionen müssen vor dem Start technisch und
-          rechtlich abschließend festgelegt werden.
-        </p>
-        <p>
-          Die auf der endgültigen Bestellseite angebotenen Zahlungsarten
-          werden dort angezeigt. Die Einzelheiten der Verarbeitung
-          personenbezogener Zahlungs- und Vertragsdaten sind in den
-          <a href="/datenschutz">Datenschutzhinweisen</a> zu erläutern.
-        </p>
-      </section>
+      <section><h2>6. Bestellung und Zahlung</h2><p>Website-Abonnements werden über Stripe bestellt und bezahlt. Mit „Zahlungspflichtig abonnieren“ gibst du eine verbindliche Bestellung ab. Die Annahme erfolgt durch die Bestätigung des Abonnements oder die Freischaltung des Premium-Zugangs.</p>
+<p>Premium wird nach erfolgreicher Zahlungsbestätigung dem ZEVYQ-Konto zugeordnet. Bei verzögerten Zahlungsmethoden kann die Freischaltung entsprechend später erfolgen. Die verfügbaren Zahlungsarten werden im Checkout angezeigt.</p></section>
 
-      <section>
-        <h2>7. Laufzeit, Verlängerung und Kündigung</h2>
-        <p>
-          Die für das jeweilige Abonnement geltende Laufzeit, Abrechnung,
-          automatische Verlängerung und Kündigungsfrist müssen vor der
-          Bestellung eindeutig dargestellt werden. Die Vertragsbedingungen
-          müssen mit der tatsächlich eingerichteten Abonnementverwaltung
-          übereinstimmen.
-        </p>
-        <p>
-          Für online abschließbare entgeltliche Dauerschuldverhältnisse
-          sind die gesetzlichen Vorgaben zur Kündigung im elektronischen
-          Geschäftsverkehr zu beachten. Die erforderliche Kündigungsfunktion
-          und ihre Bestätigungsstrecke sind vor Aktivierung des
-          Website-Abonnements einzurichten und zu testen.
-        </p>
-        <p>
-          Zwingende gesetzliche Kündigungsrechte, insbesondere das Recht
-          zur Kündigung aus wichtigem Grund, bleiben unberührt.
-        </p>
-      </section>
+      <section><h2>7. Laufzeit und Kündigung</h2><p>Die Abrechnung erfolgt nach dem gewählten Monats- oder Jahreszeitraum. Ohne Kündigung wird das Abonnement nach den bei der Bestellung vereinbarten Bedingungen fortgeführt. Verlängerungsbedingungen werden vor der Bestellung angezeigt. Zwingende gesetzliche Vorgaben bleiben unberührt.</p>
+<p>Im Profil kannst du dein Website-Abo über „Abo verwalten / kündigen“ verwalten. Ohne Anmeldung kannst du über <a href="/vertrag">Verträge hier kündigen</a> eine ordentliche oder außerordentliche Kündigung erklären.</p>
+<p>Du erhältst eine Eingangsbestätigung; der maßgebliche Beendigungszeitpunkt wird gesondert bestätigt. Bei Kündigung zum Ende des bezahlten Zeitraums bleibt Premium bis dahin bestehen. Anschließend stehen die kostenlosen Funktionen zur Verfügung. Außerordentliche Kündigungsrechte bleiben unberührt.</p></section>
 
       <section>
         <h2>8. App-Abonnements</h2>
@@ -203,20 +133,7 @@ export default function AGBPage() {
         </p>
       </section>
 
-      <section>
-        <h2>11. Widerruf und Verbraucherrechte</h2>
-        <p>
-          Verbraucherrechte bleiben unberührt. Ob und unter welchen
-          Voraussetzungen ein Widerrufsrecht besteht, richtet sich nach
-          den gesetzlichen Vorschriften und dem jeweiligen Vertrag.
-        </p>
-        <p>
-          Weitere Informationen werden in der
-          <a href="/widerruf">Widerrufsbelehrung</a> bereitgestellt.
-          Diese muss vor dem Start an das tatsächliche Website-Angebot
-          und den konkreten Bestellablauf angepasst werden.
-        </p>
-      </section>
+      <section><h2>11. Widerruf und Verbraucherrechte</h2><p>Gesetzliche Widerrufs- und Verbraucherrechte bleiben unberührt. Informationen findest du in der <a href="/widerruf">Widerrufsbelehrung</a>. Über <a href="/vertrag?art=widerruf">Vertrag widerrufen</a> kannst du deine Erklärung online übermitteln.</p></section>
 
       <section>
         <h2>12. Haftung</h2>

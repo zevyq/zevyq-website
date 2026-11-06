@@ -1,5 +1,12 @@
-"use client";
+﻿"use client";
 
+import { authStorage } from "../../../auth-storage";
+
+import { getTipExplanation } from "../../tip-explanation";
+
+import { formatTipMarket, formatTipSelection } from "../../tip-format";
+
+import { getCategoryTextColor } from "../../category-colors";
 import { FormEvent, useEffect, useState } from "react";
 
 const API_URL =
@@ -15,9 +22,11 @@ type AuthUser = {
 
 type ApiTip = {
   id: string | number;
+  tip_id?: string | number;
   event_id: string | number;
   category: string;
   league: string;
+  country?: string | null;
   home: string;
   away: string;
   event_date: string;
@@ -29,11 +38,13 @@ type ApiTip = {
   fair_odds: number;
   value: number;
   data_confidence: number;
+  v74_eligible?: boolean | null;
 };
 
 type TipsResponse = {
   success: boolean;
   tips: ApiTip[];
+  published_tips?: ApiTip[];
 };
 
 function formatDate(dateString: string) {
@@ -79,6 +90,7 @@ export default function TipDetailPage({
   const [savingBet, setSavingBet] = useState(false);
   const [betError, setBetError] = useState("");
   const [betSuccess, setBetSuccess] = useState(false);
+  const [existingStake, setExistingStake] = useState<number | null>(null);
 
   useEffect(() => {
     async function loadPage() {
@@ -86,19 +98,21 @@ export default function TipDetailPage({
         const resolvedParams = await params;
         setTipId(resolvedParams.id);
 
-        const storedUser = localStorage.getItem("zevyq_user");
+        const storedUser = authStorage.getItem("zevyq_user");
 
         if (storedUser) {
           try {
             const parsedUser = JSON.parse(storedUser) as AuthUser;
             setUser(parsedUser);
           } catch {
-            localStorage.removeItem("zevyq_user");
+            authStorage.removeItem("zevyq_user");
           }
         }
 
+        const token = authStorage.getItem("zevyq_access_token");
         const response = await fetch(`${API_URL}/analysis/tips`, {
           cache: "no-store",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
         const data: TipsResponse = await response.json();
@@ -107,10 +121,10 @@ export default function TipDetailPage({
           throw new Error("Die ZEVYQ-Tipps konnten nicht geladen werden.");
         }
 
-        const foundTip = data.tips.find(
+        const availableTips = data.published_tips ?? data.tips ?? [];
+        const foundTip = availableTips.find(
           (item) =>
-            String(item.id) === String(resolvedParams.id) ||
-            String(item.event_id) === String(resolvedParams.id),
+            String(item.tip_id ?? item.id) === String(resolvedParams.id),
         );
 
         if (!foundTip) {
@@ -120,6 +134,29 @@ export default function TipDetailPage({
         }
 
         setTip(foundTip);
+
+        if (storedUser && token) {
+          try {
+            const betsResponse = await fetch(
+              `${API_URL}/users/${encodeURIComponent(JSON.parse(storedUser).user_id)}/bets?limit=100`,
+              {
+                cache: "no-store",
+                headers: { Authorization: `Bearer ${token}` },
+              },
+            );
+            const betsData = await betsResponse.json();
+
+            if (betsResponse.ok && betsData.success) {
+              const existingBet = (betsData.bets ?? []).find(
+                (bet: { tip_id: string | number; stake: number }) =>
+                  String(bet.tip_id) === String(foundTip.tip_id ?? foundTip.id),
+              );
+              setExistingStake(existingBet ? Number(existingBet.stake) : null);
+            }
+          } catch {
+            setExistingStake(null);
+          }
+        }
       } catch (err) {
         setError(
           err instanceof Error
@@ -168,9 +205,10 @@ export default function TipDetailPage({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            ...(authStorage.getItem("zevyq_access_token") ? { Authorization: `Bearer ${authStorage.getItem("zevyq_access_token")}` } : {}),
           },
           body: JSON.stringify({
-            tip_id: String(tip.id),
+            tip_id: String(tip.tip_id ?? tip.id),
             stake: numericStake,
           }),
         },
@@ -225,7 +263,7 @@ export default function TipDetailPage({
             href="/tips"
             className="text-sm text-white/40 transition hover:text-white"
           >
-            ← Zurück zu KI-Tipps
+            ← Zurück zu allen Tipps
           </a>
 
           <div className="mt-8 rounded-2xl border border-red-500/20 bg-red-500/[0.04] p-7">
@@ -252,13 +290,15 @@ export default function TipDetailPage({
               href="/tips"
               className="text-sm text-white/40 transition hover:text-white"
             >
-              ← Zurück zu KI-Tipps
+              ← Zurück zu allen Tipps
             </a>
 
             <div className="mt-6 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
               <div>
                 <div className="flex flex-wrap items-center gap-3 text-sm text-white/40">
-                  <span>{tip.league}</span>
+                  {tip.country && <span>{tip.country}</span>}
+                    {tip.country && <span>{"\u2022"}</span>}
+                    <span>{tip.league}</span>
                   <span>•</span>
                   <span>{formatDate(tip.event_date)}</span>
                   <span>•</span>
@@ -275,7 +315,7 @@ export default function TipDetailPage({
               </div>
 
               <div className="inline-flex w-fit rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium">
-                {tip.category}
+                <span className={getCategoryTextColor(tip.category)}>{tip.category}</span>
               </div>
             </div>
           </div>
@@ -289,11 +329,11 @@ export default function TipDetailPage({
 
               <div className="mt-4">
                 <div className="text-sm text-white/40">
-                  {tip.market}
+                  {formatTipMarket(tip)}
                 </div>
 
                 <div className="mt-2 text-3xl font-bold">
-                  {tip.selection}
+                  {formatTipSelection(tip)}
                 </div>
               </div>
 
@@ -330,32 +370,20 @@ export default function TipDetailPage({
               </div>
 
               <div className="mt-8 border-t border-white/10 pt-7">
-                <h2 className="text-xl font-semibold">
-                  ZEVYQ Analyse
-                </h2>
-
-                <p className="mt-4 text-sm leading-7 text-white/50">
-                  Die aktuelle ZEVYQ V5.6 Engine hat diesen Markt als
-                  qualifizierten Tipp ausgewählt.
+                <h2 className="text-xl font-semibold">Warum dieser Tipp?</h2>
+                <p className="mt-3 text-sm leading-7 text-white/50">
+                  {"Die folgenden Angaben erkl\u00e4ren die gespeicherte Bewertung dieses Tipps. Sie beziehen sich auf die Quote und Modellwerte der Ver\u00f6ffentlichung; aktuelle Buchmacherquoten k\u00f6nnen abweichen."}
                 </p>
-
-                <p className="mt-4 text-sm leading-7 text-white/50">
-                  Grundlage der Bewertung sind die vom Backend
-                  bereitgestellten Marktdaten und die vom Modell
-                  berechnete Eintrittswahrscheinlichkeit.
-                </p>
-
-                <p className="mt-4 text-sm leading-7 text-white/50">
-                  Die Modellwahrscheinlichkeit beträgt{" "}
-                  <span className="font-medium text-white/80">
-                    {formatPercent(tip.model_probability)}
-                  </span>
-                  . Daraus ergibt sich eine modellbasierte Fair Odds
-                  von{" "}
-                  <span className="font-medium text-white/80">
-                    {tip.fair_odds.toFixed(2)}
-                  </span>
-                  .
+                <div className="mt-5 space-y-4">
+                  {getTipExplanation(tip).map(item => (
+                    <div key={item.title} className="rounded-xl bg-white/[0.03] p-4 sm:p-5">
+                      <h3 className="text-sm font-semibold text-white/90">{item.title}</h3>
+                      <p className="mt-2 text-sm leading-7 text-white/60">{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-5 text-sm leading-7 text-white/50">
+                  {"Die Datenqualit\u00e4t beschreibt die vom System bewertete Datengrundlage, nicht die Gewinnsicherheit. Auch ein hoher Modellwert und positiver Value schliessen einen Verlust nicht aus."}
                 </p>
               </div>
 
@@ -375,46 +403,6 @@ export default function TipDetailPage({
                     {(tip.data_confidence * 100).toFixed(0)}%
                   </div>
                 </div>
-              </div>
-
-              {/* Tipp nachgespielt */}
-              <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-                <div className="text-xs uppercase tracking-[0.2em] text-white/30">
-                  Persönlicher Tipp
-                </div>
-
-                <h2 className="mt-3 text-xl font-semibold">
-                  Hast du diesen Tipp nachgespielt?
-                </h2>
-
-                <p className="mt-2 text-sm leading-6 text-white/40">
-                  Speichere deinen Einsatz. Der Tipp wird deinem
-                  persönlichen ZEVYQ-Konto zugeordnet und später in
-                  Historie, Statistik und Bankroll berücksichtigt.
-                </p>
-
-                {betSuccess ? (
-                  <div className="mt-5 rounded-xl border border-green-500/20 bg-green-500/[0.06] px-5 py-4">
-                    <div className="font-medium text-green-300">
-                      ✓ Tipp erfolgreich gespeichert
-                    </div>
-
-                    <div className="mt-1 text-sm text-white/40">
-                      Dein Einsatz wurde deinem Konto zugeordnet.
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setBetError("");
-                      setShowBetModal(true);
-                    }}
-                    className="mt-5 w-full rounded-xl bg-white px-5 py-3.5 text-sm font-semibold text-black transition hover:bg-white/90"
-                  >
-                    Tipp nachgespielt
-                  </button>
-                )}
               </div>
 
               <div className="mt-6 flex flex-wrap gap-3">
@@ -440,7 +428,7 @@ export default function TipDetailPage({
                 </div>
 
                 <h2 className="mt-3 text-xl font-semibold">
-                  {tip.selection}
+                  {formatTipSelection(tip)}
                 </h2>
 
                 <div className="mt-6 space-y-4">
@@ -450,7 +438,7 @@ export default function TipDetailPage({
                     </span>
 
                     <span className="text-sm font-medium">
-                      {tip.market}
+                      {formatTipMarket(tip)}
                     </span>
                   </div>
 
@@ -557,82 +545,14 @@ export default function TipDetailPage({
         </div>
       </section>
 
-      {/* Einsatz-Modal */}
-      {showBetModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 px-6 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0b0b0b] p-7 shadow-2xl">
-            <div className="text-xs uppercase tracking-[0.2em] text-white/30">
-              Tipp nachgespielt
-            </div>
-
-            <h2 className="mt-3 text-2xl font-bold">
-              Wie hoch ist dein Einsatz?
-            </h2>
-
-            <p className="mt-2 text-sm leading-6 text-white/40">
-              {tip.home} – {tip.away}
-              <br />
-              {tip.selection} @ {tip.odds.toFixed(2)}
-            </p>
-
-            <form
-              onSubmit={handleSaveBet}
-              className="mt-7"
-            >
-              <label
-                htmlFor="stake"
-                className="mb-2 block text-sm font-medium text-white/70"
-              >
-                Einsatz in €
-              </label>
-
-              <input
-                id="stake"
-                type="text"
-                inputMode="decimal"
-                value={stake}
-                onChange={(event) => setStake(event.target.value)}
-                placeholder="z. B. 25"
-                autoFocus
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-lg outline-none transition placeholder:text-white/20 focus:border-white/30"
-              />
-
-              {betError && (
-                <div className="mt-4 rounded-xl border border-red-500/20 bg-red-500/[0.06] px-4 py-3">
-                  <p className="text-sm leading-6 text-red-300">
-                    {betError}
-                  </p>
-                </div>
-              )}
-
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowBetModal(false);
-                    setBetError("");
-                    setStake("");
-                  }}
-                  disabled={savingBet}
-                  className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-3.5 text-sm font-medium text-white/70 transition hover:bg-white/[0.06] hover:text-white disabled:opacity-50"
-                >
-                  Abbrechen
-                </button>
-
-                <button
-                  type="submit"
-                  disabled={savingBet}
-                  className="rounded-xl bg-white px-5 py-3.5 text-sm font-semibold text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {savingBet
-                    ? "Speichert..."
-                    : "Tipp speichern"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </>
   );
 }
+
+
+
+
+
+
+
+
