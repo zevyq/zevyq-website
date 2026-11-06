@@ -44,13 +44,13 @@ export default function TipEmptyStatus() {
 
       <div className="mt-6 rounded-xl border border-[#6652D9]/20 bg-[#6652D9]/[0.10] px-4 py-4">
         <div className="text-xs font-semibold uppercase tracking-wider text-[#B8A8FF]">
-          Nächste Tipp-Aktualisierung
+          Nächste Tipp-Veröffentlichung
         </div>
         <p className="mt-2 text-sm font-medium text-white">
-          {isEvening ? "Nach der nächsten qualifizierten Auswertung" : "Nach der nächsten qualifizierten Auswertung"}
+          {Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Berlin", hour: "2-digit", hourCycle: "h23" }).format(new Date())) < 9 ? "Heute um 09:00 Uhr" : "Morgen um 09:00 Uhr"}
         </p>
         <p className="mt-1 text-xs leading-5 text-white/45">
-          Eine feste Anzahl an Tipps oder eine Veröffentlichung zu einer bestimmten Uhrzeit ist nicht garantiert.
+          Veröffentlicht werden ausschließlich Tipps, die unsere Qualitätsanforderungen erfüllen.
         </p>
       </div>
     </section>
