@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { authStorage } from "../../auth-storage";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+import { useEffect, useState } from "react";
 
 type AuthUser = {
   user_id: string;
@@ -41,7 +40,6 @@ function formatPercent(value: number | null) {
 export default function BankrollPage() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [bankroll, setBankroll] = useState<BankrollSummary | null>(null);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -50,23 +48,38 @@ export default function BankrollPage() {
     setError("");
 
     try {
-      const storedUser = localStorage.getItem("zevyq_user");
+      const storedUser = authStorage.getItem("zevyq_user");
 
       if (!storedUser) {
         throw new Error(
-          "Kein ZEVYQ-Account gefunden. Bitte zuerst anmelden.",
+          "Kein ZEVYQ-Account gefunden. Bitte zuerst anmelden."
         );
       }
 
       const parsedUser = JSON.parse(storedUser) as AuthUser;
 
+      if (!parsedUser.user_id) {
+        throw new Error(
+          "Die gespeicherte Benutzer-ID ist ungültig. Bitte erneut anmelden."
+        );
+      }
+
       setUser(parsedUser);
 
+      const token = authStorage.getItem("zevyq_access_token");
+
+      if (!token) {
+        throw new Error("Sitzung abgelaufen. Bitte erneut anmelden.");
+      }
+
       const response = await fetch(
-        `${API_URL}/users/${parsedUser.user_id}/bankroll`,
+        `/api/bankroll?user_id=${encodeURIComponent(parsedUser.user_id)}`,
         {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           cache: "no-store",
-        },
+        }
       );
 
       const data = await response.json().catch(() => null);
@@ -74,23 +87,23 @@ export default function BankrollPage() {
       if (!response.ok) {
         throw new Error(
           data?.detail ||
-            "Die Bankroll-Daten konnten nicht geladen werden.",
+            "Die Bankroll-Daten konnten nicht geladen werden."
         );
       }
 
-      setBankroll(data?.bankroll || null);
-    } catch (err) {
-      if (err instanceof TypeError) {
-        setError(
-          "Das ZEVYQ-Backend ist aktuell nicht erreichbar.",
-        );
-      } else {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Die Bankroll konnte nicht geladen werden.",
-        );
+      const summary = data?.bankroll ?? data;
+
+      if (!summary) {
+        throw new Error("Keine Bankroll-Daten für dieses Konto vorhanden.");
       }
+
+      setBankroll(summary as BankrollSummary);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Die Bankroll konnte nicht geladen werden."
+      );
     } finally {
       setLoading(false);
     }
@@ -105,7 +118,7 @@ export default function BankrollPage() {
   return (
     <section className="px-6 py-10 lg:px-10">
       <div className="mx-auto max-w-7xl">
-        {/* Header */}
+
         <div className="mb-10">
           <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/30">
             ZEVYQ Intelligence
@@ -120,7 +133,6 @@ export default function BankrollPage() {
           </p>
         </div>
 
-        {/* Connection */}
         <div className="mb-8 flex flex-wrap items-center gap-3">
           <div className="rounded-full border border-green-500/20 bg-green-500/[0.06] px-4 py-2 text-sm text-green-300">
             {loading
@@ -135,7 +147,6 @@ export default function BankrollPage() {
           )}
         </div>
 
-        {/* Error */}
         {error && (
           <div className="mb-8 rounded-2xl border border-red-500/20 bg-red-500/[0.05] p-6">
             <div className="text-sm font-medium text-red-300">
@@ -156,7 +167,6 @@ export default function BankrollPage() {
           </div>
         )}
 
-        {/* Loading */}
         {loading && !error && (
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8">
             <div className="text-sm text-white/40">
@@ -165,11 +175,10 @@ export default function BankrollPage() {
           </div>
         )}
 
-        {/* Bankroll */}
         {!loading && !error && bankroll && (
           <>
-            {/* Main bankroll cards */}
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+
               <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
                 <div className="text-xs uppercase tracking-[0.18em] text-white/30">
                   Gewinn / Verlust
@@ -233,10 +242,11 @@ export default function BankrollPage() {
                   Abgeschlossene Tipps
                 </p>
               </div>
+
             </div>
 
-            {/* Result breakdown */}
             <div className="mt-8 grid gap-5 lg:grid-cols-2">
+
               <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-7">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/30">
                   Tipp-Ergebnisse
@@ -247,6 +257,7 @@ export default function BankrollPage() {
                 </h2>
 
                 <div className="mt-7 grid grid-cols-2 gap-4">
+
                   <div className="rounded-xl border border-green-500/10 bg-green-500/[0.03] p-5">
                     <div className="text-sm text-white/40">
                       Gewonnen
@@ -286,6 +297,7 @@ export default function BankrollPage() {
                       {bankroll.void}
                     </div>
                   </div>
+
                 </div>
               </div>
 
@@ -305,6 +317,7 @@ export default function BankrollPage() {
                 </p>
 
                 <div className="mt-6 space-y-4">
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-white/40">
                       Tipps gespielt
@@ -334,12 +347,14 @@ export default function BankrollPage() {
                       {formatPercent(bankroll.roi)}
                     </span>
                   </div>
+
                 </div>
               </div>
+
             </div>
 
-            {/* Navigation */}
             <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-7">
+
               <div className="text-xs uppercase tracking-[0.2em] text-white/30">
                 ZEVYQ Konto
               </div>
@@ -354,6 +369,7 @@ export default function BankrollPage() {
               </p>
 
               <div className="mt-6 flex flex-wrap gap-3">
+
                 <a
                   href="/statistics"
                   className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-medium text-white/70 transition hover:border-white/20 hover:text-white"
@@ -367,14 +383,15 @@ export default function BankrollPage() {
                 >
                   Tipp-Historie öffnen →
                 </a>
+
               </div>
             </div>
           </>
         )}
 
-        {/* No data */}
         {!loading && !error && !bankroll && (
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8">
+
             <h2 className="text-xl font-semibold">
               Noch keine Bankroll-Daten vorhanden
             </h2>
@@ -383,8 +400,10 @@ export default function BankrollPage() {
               Sobald persönliche Tipps erfasst wurden, erscheinen hier deine
               Bankroll-Daten.
             </p>
+
           </div>
         )}
+
       </div>
     </section>
   );

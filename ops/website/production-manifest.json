@@ -1,0 +1,253 @@
+{
+  "deployment": "dpl_CYFiM7VUKBN3bwMMs5Hwugm9kSTq",
+  "files": [
+    {
+      "path": ".vercelignore",
+      "sha1": "34641aec0ed1a8a9fbbf58ab3aec1db8e3c7805c"
+    },
+    {
+      "path": "app/(app)/bankroll/page.tsx",
+      "sha1": "bf975e1f7516d8081fdb434c8e007fbfe3493a5e"
+    },
+    {
+      "path": "app/(app)/best-tip/page.tsx",
+      "sha1": "f42a5d9fdb29ec94994f9270c570ded31e1007f3"
+    },
+    {
+      "path": "app/(app)/category-colors.ts",
+      "sha1": "29f802b4f6d8ae472f07562e334cc250186ac026"
+    },
+    {
+      "path": "app/(app)/components/LogoutButton.tsx",
+      "sha1": "29964d5cf7d79534c589350091a9a7f3611ea2eb"
+    },
+    {
+      "path": "app/(app)/components/MobileNavigation.tsx",
+      "sha1": "31ee4d1fa02cd7d7143be431ede79a7fa34ac93e"
+    },
+    {
+      "path": "app/(app)/components/PremiumGate.tsx",
+      "sha1": "a300a4ee3ef1a3b5906e5e3f2f70ff0fc38210bb"
+    },
+    {
+      "path": "app/(app)/components/PremiumRouteGuard.tsx",
+      "sha1": "1b1f22f6da076721c40ba37c2387b97059dd947d"
+    },
+    {
+      "path": "app/(app)/components/ProfileAvatar.tsx",
+      "sha1": "5738461e8b763d83afcfb5f9564df35d2132556d"
+    },
+    {
+      "path": "app/(app)/components/Sidebar.tsx",
+      "sha1": "31598fdd1b706a5623db91441c98ca3065783d1c"
+    },
+    {
+      "path": "app/(app)/dashboard/page.tsx",
+      "sha1": "2ce859332ee4442ac17a708df23fc84821a85374"
+    },
+    {
+      "path": "app/(app)/history/page.tsx",
+      "sha1": "9dad445c81d49f3973b6b732efbb0774aef96be2"
+    },
+    {
+      "path": "app/(app)/layout.tsx",
+      "sha1": "a185f750e3edc1585874fb863b9bc2466f459534"
+    },
+    {
+      "path": "app/(app)/safe/page.tsx",
+      "sha1": "012d52028d474cd258c02e29cfa8b52dce4aa99d"
+    },
+    {
+      "path": "app/(app)/settings/about/page.tsx",
+      "sha1": "d1726db182968270aec83046f2498444dfa3a008"
+    },
+    {
+      "path": "app/(app)/settings/app/page.tsx",
+      "sha1": "fbbcce381a3c8ef24e12b71e9b68413dff756296"
+    },
+    {
+      "path": "app/(app)/settings/page.tsx",
+      "sha1": "1aa7d7d6a07207105f2707b345f50db6c5d9b55b"
+    },
+    {
+      "path": "app/(app)/settings/profile/page.tsx",
+      "sha1": "3423f28b1635b4abf90a2a44640f92932abeb19a"
+    },
+    {
+      "path": "app/(app)/statistics/page.tsx",
+      "sha1": "d1ed202425f9aef52a91852c36a06a975cbb3246"
+    },
+    {
+      "path": "app/(app)/tip-explanation.ts",
+      "sha1": "775cc0e53194eafc7f35260829abfef9c79a4b4f"
+    },
+    {
+      "path": "app/(app)/tip-format.ts",
+      "sha1": "4069a9e236b11a3c0df4377a76338c308e42596d"
+    },
+    {
+      "path": "app/(app)/tips/[id]/page.tsx",
+      "sha1": "c4d060d004e2fde5d65e811d1709aa2a0bb963af"
+    },
+    {
+      "path": "app/(app)/tips/page.tsx",
+      "sha1": "6ddfdf20e44d312d16ccc199966826e18b30893a"
+    },
+    {
+      "path": "app/(app)/value/page.tsx",
+      "sha1": "383dc9f8c314aa77ec6b4c8043545e99b0b90d4f"
+    },
+    {
+      "path": "app/(app)/verdoppler/page.tsx",
+      "sha1": "fc6e7ce6f15716958faa1f5a59670aa8075cdd1a"
+    },
+    {
+      "path": "app/(marketing)/agb/page.tsx",
+      "sha1": "41fc4ea52b52a0abebd4ce6c730c4a3a49765e23"
+    },
+    {
+      "path": "app/(marketing)/components/LegalPage.tsx",
+      "sha1": "9ae1152e057af487c429580e5cd4cd040e922d80"
+    },
+    {
+      "path": "app/(marketing)/datenschutz/page.tsx",
+      "sha1": "571e519211f3b0417892640b8d541df6b158452f"
+    },
+    {
+      "path": "app/(marketing)/fussball-analyse/page.tsx",
+      "sha1": "52439085c51fa685185abeef52047d1a8545a359"
+    },
+    {
+      "path": "app/(marketing)/fussballtipps/page.tsx",
+      "sha1": "90de215392b97cfb4b4716217cec6909369a23c1"
+    },
+    {
+      "path": "app/(marketing)/impressum/page.tsx",
+      "sha1": "09c67cdb31efda29e6201fab4b600830f09c02b9"
+    },
+    {
+      "path": "app/(marketing)/ki-fussballtipps/page.tsx",
+      "sha1": "f18b5a957dac5abc2b915e8d81511cc6229dfbed"
+    },
+    {
+      "path": "app/(marketing)/ki-sportwetten/page.tsx",
+      "sha1": "e638cd9be0b31e5bc12b2e42a044ac3b3492e0bb"
+    },
+    {
+      "path": "app/(marketing)/login/page.tsx",
+      "sha1": "f1b69845040d6658f24eb515fcd53ca8d5dd8316"
+    },
+    {
+      "path": "app/(marketing)/page.tsx",
+      "sha1": "2f44ac94e63aba98fd3e788b17095c56ddc4fedd"
+    },
+    {
+      "path": "app/(marketing)/sportwetten-analyse/page.tsx",
+      "sha1": "213151ec38de64e6c26992c562c004c54ff09991"
+    },
+    {
+      "path": "app/(marketing)/sportwetten/page.tsx",
+      "sha1": "f301b978dc19f7c441a769e5f2f1bea0e4f2d99c"
+    },
+    {
+      "path": "app/(marketing)/vertrag/page.tsx",
+      "sha1": "299def7b615271168fc54b3cb57726c6bfe59ecc"
+    },
+    {
+      "path": "app/(marketing)/widerruf/page.tsx",
+      "sha1": "5faa461408006c2603aa91f08722f757ef7ec360"
+    },
+    {
+      "path": "app/(marketing)/zahlungsbedingungen/page.tsx",
+      "sha1": "dd048b97ec5357f16d9f0bf609b23c19fe317db2"
+    },
+    {
+      "path": "app/api/bankroll/route.ts",
+      "sha1": "7cd62541bbfe069cc300ab66aea404cf4caeefed"
+    },
+    {
+      "path": "app/auth-storage.ts",
+      "sha1": "84465e24636759e439e870c7c7617358ffce7b4c"
+    },
+    {
+      "path": "app/favicon.ico",
+      "sha1": "9ecfcc8f0ead0bf3d2d7c39e084b88f41cc89a2e"
+    },
+    {
+      "path": "app/globals.css",
+      "sha1": "f2fa6bb79b11743977a2d06b88e7c4d2336beec2"
+    },
+    {
+      "path": "app/layout.tsx",
+      "sha1": "1c49720fbedeee8203e67353fdcd67f5123bad94"
+    },
+    {
+      "path": "app/robots.ts",
+      "sha1": "11536a69ab13ce8bc6cade5d44fe500549003ee9"
+    },
+    {
+      "path": "app/sitemap.ts",
+      "sha1": "d08408f61437926ae0e873cf3b480b8d2ecb700e"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "sha1": "44d5bed565a8dd284af3e17f3b16a1c752008d0e"
+    },
+    {
+      "path": "next-env.d.ts",
+      "sha1": "d3fc80b7fae627e01dce199d12132aa4fc32d773"
+    },
+    {
+      "path": "next.config.ts",
+      "sha1": "89327ac52fc9a00fb8b885afd6654f18e58b3156"
+    },
+    {
+      "path": "package-lock.json",
+      "sha1": "2949e376394349916a2fa099ee73177744631b20"
+    },
+    {
+      "path": "package.json",
+      "sha1": "ba57785021cdf8d6212ad53fe7b17bd20d6974e5"
+    },
+    {
+      "path": "postcss.config.mjs",
+      "sha1": "8f8be689e9af58f80351df6e6b551146822f42a4"
+    },
+    {
+      "path": "public/file.svg",
+      "sha1": "fb380eeffe87d50b597383664c02982964d0d28c"
+    },
+    {
+      "path": "public/globe.svg",
+      "sha1": "2eba23b01a46733bb8423e6d38ebf5f7e95abec5"
+    },
+    {
+      "path": "public/images/cb803670-e9e7-4b30-b980-1a9a2ed7acbe.png",
+      "sha1": "be3d2668b6d06b9f91bffc0a1056f8ac05652b3b"
+    },
+    {
+      "path": "public/images/premium tipp karte.png",
+      "sha1": "0a94dcfb58d5270cf5134d7acc23f7dd88424093"
+    },
+    {
+      "path": "public/images/zevyq-hero.png",
+      "sha1": "839768b71c4de2ff001553592ad4c49b38d9cffb"
+    },
+    {
+      "path": "public/next.svg",
+      "sha1": "3f3e95622612b989c5bd6a03299a308c6f3c7e6b"
+    },
+    {
+      "path": "public/vercel.svg",
+      "sha1": "cebb8852d58c8886be3e9051a26957f42bb82f1a"
+    },
+    {
+      "path": "public/window.svg",
+      "sha1": "54c48e0daa6caa317fe1b4c419007fd93e948db9"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha1": "3cce6f8b2540d983756b909e9e5c181034da4c38"
+    }
+  ]
+}

@@ -1,4 +1,8 @@
 import Sidebar from "./components/Sidebar";
+import ProfileAvatar from "./components/ProfileAvatar";
+import MobileNavigation from "./components/MobileNavigation";
+import PremiumRouteGuard from "./components/PremiumRouteGuard";
+import Link from "next/link";
 
 export default function AppLayout({
   children,
@@ -10,6 +14,7 @@ export default function AppLayout({
       {/* Top Header */}
       <header className="border-b border-white/10">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+          <MobileNavigation />
           <div>
             <div className="text-xl font-bold tracking-[0.2em]">
               ZEVYQ
@@ -28,9 +33,7 @@ export default function AppLayout({
               </div>
             </div>
 
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-sm font-semibold">
-              M
-            </div>
+            <ProfileAvatar />
           </div>
         </div>
       </header>
@@ -40,7 +43,11 @@ export default function AppLayout({
         <Sidebar />
 
         <main className="min-w-0 flex-1">
-          {children}
+          <PremiumRouteGuard>{children}</PremiumRouteGuard>
+          <nav aria-label="Vertragsverwaltung" className="flex flex-wrap gap-4 border-t border-white/10 px-6 py-5 text-sm text-white/60">
+            <Link href="/vertrag" className="underline hover:text-white">Verträge hier kündigen</Link>
+            <Link href="/vertrag?art=widerruf" className="underline hover:text-white">Vertrag widerrufen</Link>
+          </nav>
         </main>
       </div>
     </div>

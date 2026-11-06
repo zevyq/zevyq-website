@@ -10,133 +10,25 @@ export const metadata: Metadata = {
 export default function ZahlungsbedingungenPage() {
   return (
     <LegalPage title="Abo- und Zahlungsbedingungen">
-            <aside className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-5 text-slate-200">
-        <h2 className="text-lg font-bold">Hinweis zu Website-Abonnements</h2>
-        <p>
-          Der Website-Checkout ist derzeit noch nicht aktiviert. Sobald
-          Website-Abonnements angeboten werden, werden der verbindliche
-          Gesamtpreis, der Abrechnungszeitraum, die Verlängerung, die
-          Kündigung und die angebotenen Zahlungsmethoden vor der Bestellung
-          angezeigt.
-        </p>
-      </aside>
+            
 
-      <section>
-        <h2>1. Geltungsbereich</h2>
-        <p>
-          Diese Bedingungen beschreiben die geplanten Abläufe für kostenpflichtige
-          Premium-Abonnements von ZEVYQ. Website-Abonnements und Abonnements,
-          die innerhalb einer mobilen App abgeschlossen werden, sind getrennt
-          zu behandeln, da unterschiedliche Zahlungs- und Verwaltungswege
-          verwendet werden können.
-        </p>
-      </section>
+      <section><h2>1. Geltungsbereich</h2><p>Diese Bedingungen beschreiben ZEVYQ-Premium-Abonnements. Website-Zahlungen erfolgen über Stripe. Für App-Store-Käufe gelten die jeweiligen Zahlungs- und Verwaltungswege.</p></section>
 
-      <section>
-        <h2>2. Geplante Website-Abonnements und Preise</h2>
-        <p>Für das Website-Angebot sind derzeit folgende Preise vorgesehen:</p>
-        <ul>
-          <li>Premium monatlich: 14,99 € je Monat.</li>
-          <li>Premium jährlich: 119,99 € je Jahr.</li>
-        </ul>
-        <p>
-          Vor Abschluss werden der tatsächlich geltende Gesamtpreis,
-          die steuerliche Behandlung, der Abrechnungszeitraum und die
-          Bedingungen der Verlängerung auf der Bestellseite angezeigt.
-          Die endgültige Preis- und Steuerdarstellung muss vor dem Start
-          bestätigt werden.
-        </p>
-      </section>
+      <section><h2>2. Website-Abonnements und Preise</h2><p>Premium kostet regulär 14,99 € pro Monat oder 119,99 € pro Jahr. Der verbindliche Gesamtpreis, der Abrechnungszeitraum und etwaige Rabatte werden vor der Bestellung im Checkout angezeigt.</p>
+<p>Der Leistungsumfang ergibt sich aus der jeweiligen Angebotsdarstellung. Gesetzliche Rechte bleiben unberührt.</p></section>
 
-      <section>
-        <h2>3. Bestellung und Zahlung über die Website</h2>
-        <p>
-          Für Website-Abonnements ist eine Zahlungsabwicklung über Stripe
-          vorgesehen. Maßgeblich sind die Angaben, die im tatsächlich
-          verwendeten Checkout unmittelbar vor der Bestellung angezeigt
-          werden.
-        </p>
-        <p>
-          Die verfügbaren Zahlungsmethoden werden im Checkout angezeigt.
-          Eine Bestellung darf erst verbindlich abgeschlossen werden, wenn
-          die gesetzlich erforderlichen Informationen zum Vertrag und zur
-          Zahlungspflicht dargestellt wurden.
-        </p>
-        <p>
-          Der genaue Zeitpunkt des Vertragsschlusses, der Zahlungsbestätigung
-          und der Freischaltung des Premium-Zugangs muss mit dem tatsächlichen
-          Ablauf des Website-Checkouts übereinstimmen. Diese Abläufe sind vor
-          der Veröffentlichung technisch zu prüfen.
-        </p>
-      </section>
+      <section><h2>3. Bestellung und Zahlung</h2><p>Website-Abonnements werden über Stripe bestellt und bezahlt. Mit „Zahlungspflichtig abonnieren“ gibst du eine verbindliche Bestellung ab. Die Annahme erfolgt durch die Bestätigung des Abonnements oder die Freischaltung des Premium-Zugangs.</p>
+<p>Premium wird nach erfolgreicher Zahlungsbestätigung dem ZEVYQ-Konto zugeordnet. Bei verzögerten Zahlungsmethoden kann die Freischaltung entsprechend später erfolgen. Die verfügbaren Zahlungsarten werden im Checkout angezeigt.</p></section>
 
-      <section>
-        <h2>4. Abrechnung und Verlängerung</h2>
-        <p>
-          Beim Monatsabo ist eine Abrechnung im monatlichen Rhythmus, beim
-          Jahresabo eine Abrechnung im jährlichen Rhythmus vorgesehen.
-          Ob und unter welchen Bedingungen sich das jeweilige Abonnement
-          automatisch verlängert, muss vor der Bestellung klar und
-          verständlich angegeben und technisch korrekt umgesetzt werden.
-        </p>
-        <p>
-          Vor jeder Verlängerung gelten die für das jeweilige Abonnement
-          wirksam vereinbarten Bedingungen sowie die einschlägigen
-          gesetzlichen Vorschriften.
-        </p>
-      </section>
+      <section><h2>4. Abrechnung und Verlängerung</h2><p>Die Abrechnung erfolgt nach dem gewählten Monats- oder Jahreszeitraum. Ohne Kündigung wird das Abonnement nach den bei der Bestellung vereinbarten Bedingungen fortgeführt. Verlängerungsbedingungen werden vor der Bestellung angezeigt. Zwingende gesetzliche Vorgaben bleiben unberührt.</p></section>
 
-      <section>
-        <h2>5. Kündigung von Website-Abonnements</h2>
-        <p>
-          Die konkrete Kündigungsmöglichkeit, der Kündigungszeitpunkt und
-          das Ende des Zugangs müssen vor dem Start festgelegt und im
-          Kundenbereich verständlich erläutert werden. Kündigungen dürfen
-          nicht unnötig erschwert werden.
-        </p>
-        <p>
-          Soweit gesetzlich erforderlich, wird eine leicht zugängliche
-          Kündigungsfunktion einschließlich der vorgeschriebenen
-          Bestätigungsstrecke bereitgestellt. Der tatsächliche Ablauf
-          muss vor Aktivierung kostenpflichtiger Abonnements getestet
-          werden.
-        </p>
-        <p>
-          Zwingende gesetzliche Kündigungsrechte bleiben unberührt.
-        </p>
-      </section>
+      <section><h2>5. Kündigung von Website-Abonnements</h2><p>Im Profil kannst du dein Website-Abo über „Abo verwalten / kündigen“ verwalten. Ohne Anmeldung kannst du über <a href="/vertrag">Verträge hier kündigen</a> eine ordentliche oder außerordentliche Kündigung erklären.</p>
+<p>Du erhältst eine Eingangsbestätigung; der maßgebliche Beendigungszeitpunkt wird gesondert bestätigt. Bei Kündigung zum Ende des bezahlten Zeitraums bleibt Premium bis dahin bestehen. Anschließend stehen die kostenlosen Funktionen zur Verfügung. Außerordentliche Kündigungsrechte bleiben unberührt.</p></section>
 
-      <section>
-        <h2>6. Zahlungsprobleme und Status des Premium-Zugangs</h2>
-        <p>
-          Zahlungsbestätigungen, fehlgeschlagene Zahlungen, Rückerstattungen
-          und Änderungen des Abonnementstatus müssen entsprechend dem
-          tatsächlich implementierten Zahlungs- und Abonnementprozess
-          verarbeitet werden.
-        </p>
-        <p>
-          Wann ein Premium-Zugang bei einer fehlgeschlagenen oder
-          zurückerstatteten Zahlung eingeschränkt oder beendet wird, muss
-          vor dem Start eindeutig festgelegt werden. Gesetzliche Rechte
-          der Verbraucher bleiben unberührt.
-        </p>
-      </section>
+      <section><h2>6. Zahlungsprobleme</h2><p>Bei fehlender oder ausstehender Zahlungsbestätigung kann Premium bis zur Klärung eingeschränkt sein. Prüfe deine Zahlungsinformationen in der Aboverwaltung oder kontaktiere support@zevyq.de. Gesetzliche Rechte bleiben unberührt.</p></section>
 
-      <section>
-        <h2>7. Rückerstattungen und Widerruf</h2>
-        <p>
-          Ob eine Rückerstattung erfolgt, richtet sich nach den gesetzlichen
-          Vorgaben und den Umständen des jeweiligen Falls. Gesetzliche
-          Widerrufs- und sonstige Verbraucherrechte werden durch diese
-          Zahlungsbedingungen nicht ausgeschlossen.
-        </p>
-        <p>
-          Weitere Informationen werden in der
-          <a href="/widerruf">Widerrufsbelehrung</a> bereitgestellt.
-          Diese muss vor Beginn des Website-Verkaufs auf den tatsächlich
-          verwendeten Bestellprozess abgestimmt werden.
-        </p>
-      </section>
+      <section><h2>7. Rückerstattungen und Widerruf</h2><p>Rückerstattungen richten sich nach den gesetzlichen Vorgaben und dem jeweiligen Sachverhalt. Kündigung und Widerruf sind unterschiedliche Erklärungen.</p>
+<p>Gesetzliche Widerrufs- und Verbraucherrechte bleiben unberührt. Informationen findest du in der <a href="/widerruf">Widerrufsbelehrung</a>. Über <a href="/vertrag?art=widerruf">Vertrag widerrufen</a> kannst du deine Erklärung online übermitteln.</p></section>
 
       <section>
         <h2>8. Abonnements innerhalb der mobilen App</h2>

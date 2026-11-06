@@ -24,3 +24,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Hide the native Edge password reveal button; keep the custom ZEVYQ eye icon. */
+input[type=password]::-ms-reveal,
+input[type=password]::-ms-clear {
+  display: none;
+}

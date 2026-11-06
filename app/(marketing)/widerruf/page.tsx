@@ -10,15 +10,7 @@ export const metadata: Metadata = {
 export default function WiderrufPage() {
   return (
     <LegalPage title="Widerrufsbelehrung">
-            <aside className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-5 text-slate-200">
-        <h2 className="text-lg font-bold">Hinweis zu Website-Abonnements</h2>
-        <p>
-          Der kostenpflichtige Website-Checkout ist derzeit noch nicht aktiviert.
-          Bevor Website-Abonnements angeboten werden, wird die gesetzlich
-          erforderliche elektronische Widerrufsfunktion einschließlich
-          Eingangsbestätigung bereitgestellt.
-        </p>
-      </aside>
+            
 
       <section>
         <h2>1. Widerrufsrecht</h2>
@@ -67,14 +59,7 @@ export default function WiderrufPage() {
           E-Mail:{" "}
           <a href="mailto:support@zevyq.de">support@zevyq.de</a>
         </p>
-        <p>
-          Bei online über die Benutzeroberfläche geschlossenen Verträgen
-          ist außerdem zu prüfen und umzusetzen, ob und wie die gesetzlich
-          vorgeschriebene elektronische Widerrufsfunktion nach § 356a BGB
-          bereitgestellt werden muss. Diese Funktion ist in diesem Entwurf
-          noch nicht implementiert. Die E-Mail-Möglichkeit allein wird daher
-          nicht als abschließende technische Umsetzung behandelt.
-        </p>
+        <p>Du kannst deine Erklärung online über <a href="/vertrag?art=widerruf">Vertrag widerrufen</a> abgeben. Prüfe deine Angaben und sende sie mit „Widerruf bestätigen“ ab. Danach kannst du einen Eingangsbeleg herunterladen. Eine Eingangsbestätigung mit Erklärungsinhalt, Datum und Uhrzeit wird an die angegebene E-Mail-Adresse versandt.</p>
       </section>
 
       <section>

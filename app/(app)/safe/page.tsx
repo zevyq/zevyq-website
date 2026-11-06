@@ -1,9 +1,11 @@
-"use client";
+﻿"use client";
+
+import { authStorage } from "../../auth-storage";
 
 import { useEffect, useState } from "react";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001";
 
 type Tip = {
   id: number;
@@ -27,6 +29,8 @@ type TipsResponse = {
   success: boolean;
   tip_count: number;
   tips: Tip[];
+  published_tips?: Tip[];
+  user_plan?: string;
 };
 
 function formatProbability(value: number) {
@@ -44,6 +48,7 @@ export default function SafePage() {
   const [tips, setTips] = useState<Tip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isPremium, setIsPremium] = useState<boolean | null>(null);
 
   useEffect(() => {
     async function loadTips() {
@@ -51,7 +56,9 @@ export default function SafePage() {
         setLoading(true);
         setError("");
 
+        const token = authStorage.getItem("zevyq_access_token");
         const response = await fetch(`${API_URL}/analysis/tips`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
           cache: "no-store",
         });
 
@@ -65,7 +72,16 @@ export default function SafePage() {
           throw new Error("Die ZEVYQ-Analyse war nicht erfolgreich.");
         }
 
-        const safeTips = (data.tips || []).filter(
+        const plan = String(data.user_plan ?? "").toUpperCase();
+        const premium = plan.includes("PREMIUM") || plan === "PRO";
+        setIsPremium(premium);
+
+        if (!premium) {
+          setTips([]);
+          return;
+        }
+
+        const safeTips = (data.published_tips ?? data.tips ?? []).filter(
           (tip) => tip.category.toUpperCase() === "SAFE",
         );
 
@@ -122,7 +138,7 @@ export default function SafePage() {
               : "Live mit ZEVYQ Backend verbunden"}
           </div>
 
-          {!loading && !error && (
+          {!loading && !error && isPremium === true && (
             <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/45">
               {tips.length} Safe-Tipp{tips.length === 1 ? "" : "s"}
             </div>
@@ -142,8 +158,26 @@ export default function SafePage() {
           </div>
         )}
 
+        {/* Premium Lock */}
+        {!loading && !error && isPremium === false && (
+          <div className="mb-8 rounded-2xl border border-amber-400/20 bg-amber-400/[0.04] p-8">
+            <div className="flex items-start gap-4">
+              <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.08] p-3 text-amber-300">
+                <span aria-hidden="true">🔒</span>
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold">Safe-Tipps sind Premium</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-white/50">
+                  Mit ZEVYQ Premium erhältst du Zugriff auf die Safe-Tipps und die weiteren Tipp-Kategorien. Dein täglicher Free-Tipp bleibt weiterhin verfügbar.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Stats */}
-        <div className="mb-8 grid gap-4 sm:grid-cols-3">
+        {isPremium === true && (
+          <div className="mb-8 grid gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
             <div className="text-xs uppercase tracking-[0.18em] text-white/30">
               Safe Tipps
@@ -195,6 +229,7 @@ export default function SafePage() {
           </div>
         </div>
 
+        )}
         {/* Loading */}
         {loading && (
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-10 text-center">
@@ -209,27 +244,34 @@ export default function SafePage() {
         )}
 
         {/* Empty */}
-        {!loading && !error && tips.length === 0 && (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-10 text-center">
-            <div className="text-lg font-semibold">
-              Aktuell kein Safe-Tipp
+        {!loading && !error && isPremium === true && tips.length === 0 && (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8">
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/30">
+              ZEVYQ QUALITY CHECK
             </div>
-
-            <p className="mt-2 text-sm leading-6 text-white/35">
-              Für den aktuellen Analysezeitraum wurde kein Markt als Safe
-              qualifiziert.
+            <h2 className="mt-3 text-xl font-semibold">
+              Aktuell kein qualifizierter Safe-Tipp
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-white/40">
+              Die ZEVYQ-Engine hat im aktuellen Analysezeitraum keinen Safe-Tipp qualifiziert.
             </p>
+            <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] p-5 text-left">
+              <div className="text-sm font-medium">Qualit&auml;t vor Quantit&auml;t</div>
+              <p className="mt-2 text-sm leading-6 text-white/35">
+                Wir zeigen nur Tipps an, welche die Qualit&auml;tskriterien der Engine erf&uuml;llen. Es werden keine Tipps k&uuml;nstlich erzeugt.
+              </p>
+            </div>
           </div>
         )}
 
         {/* Safe Tips */}
-        {!loading && tips.length > 0 && (
+        {!loading && isPremium === true && tips.length > 0 && (
           <div className="space-y-4">
             {tips.map((tip) => (
               <a
                 key={tip.id}
                 href={`/tips/${tip.id}`}
-                className="group block rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition hover:border-white/20 hover:bg-white/[0.04]"
+                className="group block rounded-2xl border border-[#159A62]/80 bg-white/[0.02] p-6 transition hover:border-[#159A62] hover:bg-white/[0.04]"
               >
                 <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
                   <div className="min-w-0 flex-1">
@@ -337,3 +379,6 @@ export default function SafePage() {
     </section>
   );
 }
+
+
+

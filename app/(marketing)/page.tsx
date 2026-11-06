@@ -84,8 +84,7 @@ const progressItems = [
   { label: "Benutzerkonten", done: true },
   { label: "Persönliche Statistiken", done: true },
   { label: "Tipp-Historie", done: true },
-  { label: "Track Record", done: false },
-  { label: "Premium-System", done: false },
+  { label: "Premium-System", done: true },
 ];
 
 export default function MarketingPage() {
@@ -118,7 +117,20 @@ export default function MarketingPage() {
             </a>
           </nav>
 
-          <div className="hidden w-24 md:block" />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <a
+              href="/login"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/25 bg-white/5 px-4 py-2.5 text-sm font-bold text-white transition hover:border-white/50 hover:bg-white/10"
+            >
+              Anmelden
+            </a>
+            <a
+              href="/login?mode=register"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-center text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition hover:bg-blue-500"
+            >
+              Konto erstellen
+            </a>
+          </div>
         </div>
       </header>
 
@@ -157,7 +169,7 @@ export default function MarketingPage() {
                 href="#entwicklung"
                 className="rounded-2xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-bold text-slate-200 transition hover:border-white/25 hover:bg-white/10"
               >
-                Entwicklungsstand ansehen
+                Funktionen ansehen
               </a>
             </div>
 
@@ -322,26 +334,14 @@ export default function MarketingPage() {
               <p className="mt-5 max-w-xl text-lg leading-8 text-slate-400">
                 ZEVYQ befindet sich aktiv in der Entwicklung. Die technische
                 Basis, echte KI-Tipps, Benutzerkonten und persönliche
-                Auswertungen sind bereits aufgebaut. Jetzt folgen die nächsten
-                Produktstufen.
+                Auswertungen stehen dir in der Web-App zur Verfügung. ZEVYQ wird kontinuierlich weiterentwickelt.
               </p>
 
-              <div className="mt-8 flex items-end justify-between">
-                <div>
-                  <div className="text-5xl font-black tracking-tight text-white">
-                    75%
-                  </div>
-                  <div className="mt-1 text-sm font-semibold text-slate-500">
-                    aktueller Entwicklungsstand
-                  </div>
-                </div>
-                <div className="text-sm font-bold text-blue-400">
-                  Wir bauen weiter.
-                </div>
-              </div>
-
-              <div className="mt-5 h-3 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full w-[75%] rounded-full bg-blue-600 shadow-lg shadow-blue-600/30" />
+              <div className="mt-8 rounded-2xl border border-blue-400/20 bg-blue-500/10 p-5">
+                <div className="text-2xl font-black text-white">Web-App verfügbar</div>
+                <p className="mt-2 text-sm text-slate-400">
+                  Kostenlos starten und Premium direkt im Konto abonnieren.
+                </p>
               </div>
             </div>
 
@@ -385,7 +385,7 @@ export default function MarketingPage() {
       <section className="bg-[#050816]">
         <div className="mx-auto max-w-5xl px-6 py-24 text-center lg:px-8">
           <div className="mx-auto inline-flex rounded-full border border-blue-400/20 bg-blue-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-blue-400">
-            ZEVYQ wird aufgebaut
+            ZEVYQ jetzt entdecken
           </div>
 
           <h2 className="mt-6 text-4xl font-black tracking-tight text-white sm:text-6xl">
@@ -393,17 +393,16 @@ export default function MarketingPage() {
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-400">
-            Die öffentliche Beta folgt. Bis dahin kannst du den aktuellen
-            Entwicklungsstand von ZEVYQ verfolgen.
+            Erstelle dein kostenloses Konto und entdecke ZEVYQ. Mit Premium erhältst du Zugriff auf alle Tipp-Kategorien, Analysen und persönlichen Statistiken.
           </p>
 
           <div className="mt-9">
-            <a
-              href="#entwicklung"
-              className="inline-flex rounded-2xl bg-blue-600 px-7 py-4 text-sm font-bold text-white shadow-xl shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-500"
-            >
-              Entwicklungsstand ansehen
-            </a>
+            <div className="inline-flex flex-col items-center gap-3">
+              <a href="/login?mode=register" className="inline-flex rounded-2xl bg-blue-600 px-7 py-4 text-sm font-bold text-white shadow-xl shadow-blue-600/20 transition hover:bg-blue-500">Kostenloses Konto erstellen</a>
+              <p className="text-sm text-slate-500">
+                Kostenlos registrieren. Premium kannst du bei Bedarf im Konto abonnieren.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -425,6 +424,8 @@ export default function MarketingPage() {
             <a className="transition hover:text-white" href="/agb">AGB</a>
             <a className="transition hover:text-white" href="/zahlungsbedingungen">Abo &amp; Zahlungsbedingungen</a>
             <a className="transition hover:text-white" href="/widerruf">Widerruf</a>
+            <a className="transition hover:text-white" href="/vertrag">Verträge hier kündigen</a>
+            <a className="transition hover:text-white" href="/vertrag?art=widerruf">Vertrag widerrufen</a>
           </nav>
         </div>
       </footer>

@@ -185,25 +185,10 @@ export default function DatenschutzPage() {
         </p>
       </section>
 
-      <section>
-        <h2>9. Website-Abonnements und Zahlungen</h2>
-        <p>
-          Der Online-Checkout für Website-Abonnements ist derzeit noch
-          nicht Bestandteil der aktiven Website-Funktionen. Vor seiner
-          Freischaltung werden diese Datenschutzhinweise um die tatsächlich
-          verwendete Zahlungsabwicklung, insbesondere die dabei verarbeiteten
-          Zahlungs- und Vertragsdaten, Zwecke und Rechtsgrundlagen,
-          Empfänger sowie gegebenenfalls erforderliche Angaben zu
-          Datenübermittlungen ergänzt.
-        </p>
-        <p>
-          Abonnements, die innerhalb einer mobilen App über einen App Store
-          abgeschlossen werden, folgen dem jeweiligen Kaufweg. Die Zahlung
-          und Abrechnung erfolgt über den betreffenden App-Store-Anbieter;
-          ein Abonnementdienst kann für die technische Zuordnung des
-          Mitgliedschaftsstatus eingesetzt werden.
-        </p>
-      </section>
+      <section><h2>9. Zahlungen und Vertragserklärungen</h2><p>Website-Zahlungen werden durch Stripe abgewickelt. Hierbei verarbeitet Stripe erforderliche Kontakt-, Vertrags-, Rechnungs- und Zahlungsdaten. ZEVYQ speichert zur Zuordnung Kunden- und Abonnementkennungen, Status, Laufzeit und Verlängerungsinformationen. Vollständige Karteninformationen werden nicht in der ZEVYQ-Kontodatenbank gespeichert.</p>
+<p>Die Verarbeitung dient der Vertragsdurchführung nach Art. 6 Abs. 1 lit. b DSGVO und gesetzlichen Pflichten nach Art. 6 Abs. 1 lit. c DSGVO. Angaben zu Stripe und internationalen Datenübermittlungen findest du in <a href="https://stripe.com/de/privacy" target="_blank" rel="noreferrer">Stripes Datenschutzhinweisen</a>.</p>
+<p>Bei Kündigung oder Widerruf speichern wir Name, E-Mail-Adresse, Vertragsangaben, Erklärung, gegebenenfalls Grund und Wunschtermin sowie Eingangszeitpunkt und Bearbeitungs- und Versandstatus. Dies dient der Bearbeitung, Bestätigung und dem Nachweis. Bestätigungen werden über Brevo versandt. Rechtsgrundlagen sind Art. 6 Abs. 1 lit. b und c DSGVO sowie erforderlichenfalls berechtigte Nachweisinteressen nach Art. 6 Abs. 1 lit. f DSGVO. Die Speicherung richtet sich nach der erforderlichen Bearbeitungsdauer und gesetzlichen Aufbewahrungs- und Nachweisfristen.</p>
+<p>Bei App-Store-Käufen erfolgt die Zahlung über den jeweiligen Store; ein Abonnementdienst kann zur technischen Zuordnung eingesetzt werden.</p></section>
 
       <section>
         <h2>10. Speicherdauer und Löschung</h2>
@@ -233,7 +218,7 @@ export default function DatenschutzPage() {
         <h2>11. Empfänger und Datenübermittlungen</h2>
         <p>
           Je nach genutzter Funktion können Vercel für Website-Bereitstellung
-          und Webanalyse, Fly.io für das Backend sowie Brevo für den Versand
+          und Webanalyse, Fly.io für das Backend, Stripe für Website-Zahlungen sowie Brevo für den Versand
           von Kontonachrichten Daten im Rahmen ihrer jeweiligen Dienste
           verarbeiten.
         </p>
