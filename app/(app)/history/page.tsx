@@ -43,6 +43,7 @@ type PersonalBet = {
   user_id: string;
   tip_id: string;
   stake: number;
+  played_odds: number | null;
   status: string;
   result_home: number | null;
   result_away: number | null;
@@ -93,6 +94,7 @@ type HistoryTip = {
   result_away: number | null;
   profit_loss: number | null;
   stake: number | null;
+  played_odds?: number | null;
 };
 
 type Filter = "ALLE" | "OFFEN" | "GEWONNEN" | "VERLOREN" | "VOID";
@@ -243,6 +245,11 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [personalMode, setPersonalMode] = useState(false);
+  const [editingBet, setEditingBet] = useState<HistoryTip | null>(null);
+  const [editStake, setEditStake] = useState("");
+  const [editOdds, setEditOdds] = useState("");
+  const [editError, setEditError] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
 
   const loadHistory = useCallback(async () => {
     try {
@@ -311,6 +318,7 @@ export default function HistoryPage() {
             result_away: bet.result_away,
             profit_loss: bet.profit_loss,
             stake: bet.stake,
+            played_odds: bet.played_odds,
           })),
         );
         return;
@@ -415,6 +423,77 @@ export default function HistoryPage() {
     }),
     [periodTips],
   );
+
+
+  function openPersonalBetEditor(tip: HistoryTip) {
+    setEditingBet(tip);
+    setEditStake(String(tip.stake ?? "").replace(".", ","));
+    setEditOdds(String(tip.played_odds ?? tip.odds).replace(".", ","));
+    setEditError("");
+  }
+
+  async function savePersonalBetEdit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!editingBet || !personalMode || editSaving) return;
+
+    const stake = Number(editStake.trim().replace(",", "."));
+    const playedOdds = Number(editOdds.trim().replace(",", "."));
+
+    if (!Number.isFinite(stake) || stake <= 0 || stake > 1000000) {
+      setEditError("Bitte einen gültigen Einsatz eingeben.");
+      return;
+    }
+    if (!Number.isFinite(playedOdds) || playedOdds <= 1) {
+      setEditError("Bitte eine gültige Quote eingeben.");
+      return;
+    }
+    if (playedOdds < editingBet.odds * 0.9 - 1e-9 ||
+        playedOdds > editingBet.odds * 1.1 + 1e-9) {
+      setEditError("Die gespielte Quote darf maximal 10 % von der KI-Quote abweichen.");
+      return;
+    }
+
+    const token = authStorage.getItem("zevyq_access_token");
+    const rawUser = authStorage.getItem("zevyq_user");
+    let userId = "";
+    try {
+      userId = rawUser ? String(JSON.parse(rawUser).user_id ?? "") : "";
+    } catch {
+      setEditError("Deine Anmeldung konnte nicht gelesen werden.");
+      return;
+    }
+    if (!token || !userId) {
+      setEditError("Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.");
+      return;
+    }
+
+    setEditError("");
+    setEditSaving(true);
+    try {
+      const response = await fetch(
+        `${API_URL}/users/${encodeURIComponent(userId)}/bets/${editingBet.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ stake, played_odds: playedOdds }),
+        },
+      );
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.detail || "Die Änderung konnte nicht gespeichert werden.");
+      }
+
+      setEditingBet(null);
+      await loadHistory();
+    } catch (error) {
+      setEditError(error instanceof Error ? error.message : "Speichern fehlgeschlagen.");
+    } finally {
+      setEditSaving(false);
+    }
+  }
 
   return (
     <section className="px-6 py-10 lg:px-10">
@@ -663,7 +742,14 @@ export default function HistoryPage() {
                       <div className="mt-6 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-2 lg:grid-cols-5">
                         <div>
                           <div className="text-xs text-white/30">Quote</div>
-                          <div className="mt-1 font-semibold">{tip.odds.toFixed(2)}</div>
+                          <div className="mt-1 font-semibold">
+                             {(personalMode ? tip.played_odds ?? tip.odds : tip.odds).toFixed(2)}
+                           </div>
+                           {personalMode && tip.played_odds != null && (
+                             <div className="mt-1 text-xs text-white/35">
+                               KI-Quote: {tip.odds.toFixed(2)}
+                             </div>
+                           )}
                         </div>
                         <div>
                           <div className="text-xs text-white/30">Modell</div>
@@ -687,6 +773,21 @@ export default function HistoryPage() {
                         </div>
                       </div>
 
+                      {personalMode && tip.stake !== null &&
+                        tip.status.toUpperCase() === "OFFEN" &&
+                        tip.event_date &&
+                        Number.isFinite(new Date(tip.event_date).getTime()) &&
+                        new Date(tip.event_date).getTime() > Date.now() && (
+                          <div className="mt-5 border-t border-white/10 pt-4">
+                            <button
+                              type="button"
+                              onClick={() => openPersonalBetEditor(tip)}
+                              className="rounded-xl bg-[#6652D9] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7663e6]"
+                            >
+                              Einsatz und Quote bearbeiten
+                            </button>
+                          </div>
+                        )}
                       {tip.profit_loss !== null && (
                         <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
                           <span className="text-sm text-white/35">
@@ -730,6 +831,61 @@ export default function HistoryPage() {
           </>
         )}
       </div>
+
+      {editingBet && personalMode && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => { if (!editSaving) setEditingBet(null); }}>
+          <div role="dialog" aria-modal="true" aria-labelledby="edit-bet-heading"
+            className="w-full max-w-md rounded-2xl border border-white/15 bg-[#111318] p-6 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}>
+            <h2 id="edit-bet-heading" className="text-xl font-semibold">
+              Persönliche Wette bearbeiten
+            </h2>
+            <p className="mt-2 text-sm text-white/50">
+              {editingBet.home} – {editingBet.away}
+            </p>
+            <p className="mt-1 text-sm text-white/50">
+              {formatTipLabel(editingBet)} · KI-Quote {editingBet.odds.toFixed(2)}
+            </p>
+            <form onSubmit={savePersonalBetEdit} className="mt-6 space-y-4">
+              <div>
+                <label htmlFor="personal-edit-stake" className="mb-2 block text-sm text-white/70">
+                  Dein Gesamteinsatz in Euro
+                </label>
+                <input id="personal-edit-stake" type="text" inputMode="decimal"
+                  value={editStake} onChange={(event) => setEditStake(event.target.value)}
+                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] px-4 py-3 text-white outline-none focus:border-violet-400"
+                  required />
+              </div>
+              <div>
+                <label htmlFor="personal-edit-odds" className="mb-2 block text-sm text-white/70">
+                  Deine gespielte Quote
+                </label>
+                <input id="personal-edit-odds" type="text" inputMode="decimal"
+                  value={editOdds} onChange={(event) => setEditOdds(event.target.value)}
+                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] px-4 py-3 text-white outline-none focus:border-violet-400"
+                  required />
+                <p className="mt-2 text-xs text-white/40">
+                  Erlaubt: maximal 10 % Abweichung von der veröffentlichten KI-Quote.
+                  Änderungen sind nur vor Anpfiff möglich.
+                </p>
+              </div>
+              {editError && <p role="alert" className="text-sm text-red-300">{editError}</p>}
+              <div className="flex gap-3 pt-2">
+                <button type="button" disabled={editSaving}
+                  onClick={() => setEditingBet(null)}
+                  className="flex-1 rounded-xl border border-white/15 px-4 py-3 text-sm text-white/70 disabled:opacity-50">
+                  Abbrechen
+                </button>
+                <button type="submit" disabled={editSaving}
+                  className="flex-1 rounded-xl bg-[#6652D9] px-4 py-3 text-sm font-semibold text-white disabled:opacity-50">
+                  {editSaving ? "Speichert …" : "Änderungen speichern"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
