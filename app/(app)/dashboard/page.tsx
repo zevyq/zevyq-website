@@ -1,5 +1,7 @@
 ﻿"use client";
 
+import TipEmptyStatus from "../tip-empty-status";
+
 import { authStorage } from "../../auth-storage";
 
 import { formatTipLabel, formatTipSelection } from "../tip-format";
@@ -226,6 +228,8 @@ export default function DashboardPage() {
 
   const isPremium = apiPlan === "PRO" || apiPlan === "PREMIUM";
 
+  const dashboardTips = tips.length > 0 ? tips : freeTip ? [freeTip] : [];
+
   const bestTip = isPremium
     ? tips.find((tip) => tip.category.trim().toUpperCase() === "BEST TIP") ?? null
     : freeTip ?? tips[0] ?? null;
@@ -389,6 +393,7 @@ export default function DashboardPage() {
         )}
 
         {/* Best Tip */}
+        {(loadingTips || !!tipsError || !!bestTip || tips.length > 0) && (
         <div className={`mt-8 rounded-2xl border-2 ${isPremium ? "border-[#6652D9]" : "border-white/10"} bg-white/[0.02] p-7`}>
           <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
             <div>
@@ -467,6 +472,7 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
+        )}
 
         {/* Current tips */}
         <div className="mt-8">
@@ -493,13 +499,11 @@ export default function DashboardPage() {
             <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8 text-center text-sm text-white/40">
               Aktuelle ZEVYQ-Tipps werden geladen...
             </div>
-          ) : tips.length === 0 ? (
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8 text-center text-sm text-white/40">
-              Aktuell wurden keine qualifizierten Tipps gefunden.
-            </div>
+          ) : tipsError ? null : dashboardTips.length === 0 ? (
+            <TipEmptyStatus />
           ) : (
             <div className="grid gap-4">
-              {tips.slice(0, 5).map((tip) => (
+              {dashboardTips.slice(0, 5).map((tip) => (
                 <div
                   key={tip.id}
                   className={`rounded-2xl border-2 ${isPremium ? getCategoryBorderColor(tip.category) : "border-white/10"} bg-white/[0.02] p-6 transition hover:bg-white/[0.04]`}
