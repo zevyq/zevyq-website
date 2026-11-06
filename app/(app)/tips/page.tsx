@@ -1,5 +1,7 @@
 ﻿"use client";
 
+import TipEmptyStatus from "../tip-empty-status";
+
 import { authStorage } from "../../auth-storage";
 
 import { formatTipLabel } from "../tip-format";
@@ -426,7 +428,10 @@ export default function TipsPage() {
         )}
 
         {/* Empty */}
-        {!loading && !error && filteredTips.length === 0 && (
+        {!loading && !error && publishedTips.length === 0 && (
+          <TipEmptyStatus />
+        )}
+        {!loading && !error && publishedTips.length > 0 && filteredTips.length === 0 && (
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-10 text-center">
             <div className="text-lg font-semibold">
               Keine Tipps in dieser Kategorie
