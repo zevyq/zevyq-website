@@ -1,46 +1,39 @@
-﻿import type { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: "https://zevyq.de",
-      lastModified: new Date(),
+      url: "https://www.zevyq.de",
       changeFrequency: "daily",
       priority: 1,
     },
     {
-      url: "https://zevyq.de/sportwetten",
-      lastModified: new Date(),
+      url: "https://www.zevyq.de/sportwetten",
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
-      url: "https://zevyq.de/fussballtipps",
-      lastModified: new Date(),
+      url: "https://www.zevyq.de/fussballtipps",
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
-      url: "https://zevyq.de/ki-sportwetten",
-      lastModified: new Date(),
+      url: "https://www.zevyq.de/ki-sportwetten",
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
-      url: "https://zevyq.de/ki-fussballtipps",
-      lastModified: new Date(),
+      url: "https://www.zevyq.de/ki-fussballtipps",
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
-      url: "https://zevyq.de/sportwetten-analyse",
-      lastModified: new Date(),
+      url: "https://www.zevyq.de/sportwetten-analyse",
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
-      url: "https://zevyq.de/fussball-analyse",
-      lastModified: new Date(),
+      url: "https://www.zevyq.de/fussball-analyse",
       changeFrequency: "weekly",
       priority: 0.9,
     },

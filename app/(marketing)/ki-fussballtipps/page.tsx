@@ -1,6 +1,7 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.zevyq.de/ki-fussballtipps" },
   title: "KI Fußballtipps – Datenbasierte Fußballanalyse | ZEVYQ",
   description:
     "KI Fußballtipps mit ZEVYQ: datenbasierte Analyse von Fußballspielen, Wahrscheinlichkeiten, Quoten und verschiedenen Wettmärkten.",

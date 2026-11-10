@@ -1,6 +1,7 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.zevyq.de/fussball-analyse" },
   title: "Fußball Analyse – Datenbasierte Spielanalyse | ZEVYQ",
   description:
     "Fußball Analyse mit ZEVYQ: Spiele, Wahrscheinlichkeiten, Quoten und Wettmärkte datenbasiert und strukturiert analysieren.",

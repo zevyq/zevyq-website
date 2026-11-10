@@ -1,6 +1,7 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.zevyq.de/sportwetten-analyse" },
   title: "Sportwetten Analyse – Quoten & Wahrscheinlichkeiten | ZEVYQ",
   description:
     "Sportwetten Analyse mit ZEVYQ: Quoten, Wahrscheinlichkeiten, Wettmärkte und datenbasierte Fußballanalysen strukturiert bewerten.",

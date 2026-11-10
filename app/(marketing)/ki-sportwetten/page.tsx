@@ -1,6 +1,7 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.zevyq.de/ki-sportwetten" },
   title: "KI Sportwetten – Datenbasierte Wettanalyse | ZEVYQ",
   description:
     "KI Sportwetten mit ZEVYQ: datenbasierte Fußballanalyse, Wahrscheinlichkeiten, Quoten und Qualitätsregeln für strukturierte Wettanalysen.",
