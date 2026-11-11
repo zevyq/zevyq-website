@@ -98,6 +98,7 @@ type HistoryTip = {
 };
 
 type Filter = "ALLE" | "OFFEN" | "GEWONNEN" | "VERLOREN" | "VOID";
+type CategoryFilter = "ALLE" | "BEST TIP" | "VALUE" | "SAFE" | "VERDOPPLER";
 
 
 type HistoryPeriod = "WOCHE" | "MONAT" | "JAHR" | "GESAMT";
@@ -235,6 +236,7 @@ function statusClasses(status: string) {
 export default function HistoryPage() {
   const [tips, setTips] = useState<HistoryTip[]>([]);
   const [filter, setFilter] = useState<Filter>("ALLE");
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("ALLE");
   const [period, setPeriod] = useState<HistoryPeriod>("GESAMT");
   const [selectedYear, setSelectedYear] = useState<number>(
     () => Number(berlinDateKey(new Date().toISOString())?.slice(0, 4)),
@@ -396,32 +398,39 @@ export default function HistoryPage() {
     [qualityTips, period, selectedYear, selectedMonth],
   );
 
+  const categoryPeriodTips = useMemo(
+    () => categoryFilter === "ALLE"
+      ? periodTips
+      : periodTips.filter(tip => tip.category?.trim().toUpperCase() === categoryFilter),
+    [periodTips, categoryFilter],
+  );
+
   const filteredTips = useMemo(() => {
-    if (filter === "ALLE") return periodTips;
-    return periodTips.filter((tip) => tip.status.toUpperCase() === filter);
-  }, [periodTips, filter]);
+    if (filter === "ALLE") return categoryPeriodTips;
+    return categoryPeriodTips.filter((tip) => tip.status.toUpperCase() === filter);
+  }, [categoryPeriodTips, filter]);
 
   const statistics = useMemo(() => {
-    const won = periodTips.filter((tip) => tip.status.toUpperCase() === "GEWONNEN").length;
-    const lost = periodTips.filter((tip) => tip.status.toUpperCase() === "VERLOREN").length;
-    const open = periodTips.filter((tip) => tip.status.toUpperCase() === "OFFEN").length;
-    const voidCount = periodTips.filter((tip) => tip.status.toUpperCase() === "VOID").length;
+    const won = categoryPeriodTips.filter((tip) => tip.status.toUpperCase() === "GEWONNEN").length;
+    const lost = categoryPeriodTips.filter((tip) => tip.status.toUpperCase() === "VERLOREN").length;
+    const open = categoryPeriodTips.filter((tip) => tip.status.toUpperCase() === "OFFEN").length;
+    const voidCount = categoryPeriodTips.filter((tip) => tip.status.toUpperCase() === "VOID").length;
     const settled = won + lost;
     const hitRate = settled > 0 ? (won / settled) * 100 : null;
-    const profitLoss = periodTips.reduce((sum, tip) => sum + (tip.profit_loss ?? 0), 0);
+    const profitLoss = categoryPeriodTips.reduce((sum, tip) => sum + (tip.profit_loss ?? 0), 0);
 
-    return { total: periodTips.length, won, lost, open, voidCount, settled, hitRate, profitLoss };
-  }, [periodTips]);
+    return { total: categoryPeriodTips.length, won, lost, open, voidCount, settled, hitRate, profitLoss };
+  }, [categoryPeriodTips]);
 
   const filterCounts = useMemo(
     () => ({
-      ALLE: periodTips.length,
-      OFFEN: periodTips.filter((tip) => tip.status.toUpperCase() === "OFFEN").length,
-      GEWONNEN: periodTips.filter((tip) => tip.status.toUpperCase() === "GEWONNEN").length,
-      VERLOREN: periodTips.filter((tip) => tip.status.toUpperCase() === "VERLOREN").length,
-      VOID: periodTips.filter((tip) => tip.status.toUpperCase() === "VOID").length,
+      ALLE: categoryPeriodTips.length,
+      OFFEN: categoryPeriodTips.filter((tip) => tip.status.toUpperCase() === "OFFEN").length,
+      GEWONNEN: categoryPeriodTips.filter((tip) => tip.status.toUpperCase() === "GEWONNEN").length,
+      VERLOREN: categoryPeriodTips.filter((tip) => tip.status.toUpperCase() === "VERLOREN").length,
+      VOID: categoryPeriodTips.filter((tip) => tip.status.toUpperCase() === "VOID").length,
     }),
-    [periodTips],
+    [categoryPeriodTips],
   );
 
 
@@ -515,7 +524,7 @@ export default function HistoryPage() {
         <div className="mb-6 flex flex-wrap gap-3">
           <button
             type="button"
-            onClick={() => { setFilter("ALLE"); setPersonalMode(false); }}
+            onClick={() => { setFilter("ALLE"); setCategoryFilter("ALLE"); setPersonalMode(false); }}
             aria-pressed={!personalMode}
             className={`rounded-xl border px-5 py-3 text-sm font-semibold transition ${
               !personalMode
@@ -527,7 +536,7 @@ export default function HistoryPage() {
           </button>
           <button
             type="button"
-            onClick={() => { setFilter("ALLE"); setPersonalMode(true); }}
+            onClick={() => { setFilter("ALLE"); setCategoryFilter("ALLE"); setPersonalMode(true); }}
             aria-pressed={personalMode}
             className={`rounded-xl border px-5 py-3 text-sm font-semibold transition ${
               personalMode
@@ -674,6 +683,25 @@ export default function HistoryPage() {
                   </div>
                 </div>
               )}
+              <div role="group" aria-label="Kategorie">
+                <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/40">
+                  Kategorie
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {([
+                    ["ALLE", "Alle"], ["BEST TIP", "Best Tip"],
+                    ["VALUE", "Value"], ["SAFE", "Safe"],
+                    ["VERDOPPLER", "Verdoppler"],
+                  ] as [CategoryFilter, string][]).map(([value, label]) => (
+                    <button key={value} type="button"
+                      onClick={() => setCategoryFilter(value)}
+                      aria-pressed={categoryFilter === value}
+                      className={historyFilterClasses(categoryFilter === value)}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div role="group" aria-label="Ergebnis">
                 <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/40">
                   Ergebnis
@@ -693,7 +721,7 @@ export default function HistoryPage() {
                 </div>
               </div>
               <p className="text-xs leading-5 text-white/40">
-                {"Woche zeigt die aktuelle Kalenderwoche. Bei Monat und Jahr gilt die Auswahl. Massgeblich ist das Spieldatum in Europe/Berlin. Kennzahlen und Ergebnis-Anzahlen gelten fuer den gewaehlten Zeitraum; der Ergebnisfilter grenzt die Liste weiter ein."}
+                {"Woche zeigt die aktuelle Kalenderwoche. Bei Monat und Jahr gilt die Auswahl. Massgeblich ist das Spieldatum in Europe/Berlin. Kennzahlen und Ergebnis-Anzahlen gelten fuer den gewaehlten Zeitraum und die gewaehlte Kategorie; der Ergebnisfilter grenzt nur die Liste weiter ein."}
               </p>
             </div>
 
