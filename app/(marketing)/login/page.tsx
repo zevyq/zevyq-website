@@ -1,6 +1,6 @@
 "use client";
 
-import { saveAuthSession } from "../../auth-storage";
+import { authStorage, saveAuthSession } from "../../auth-storage";
 
 import { FormEvent, useEffect, useState } from "react";
 
@@ -28,6 +28,56 @@ export default function LoginPage() {
       setMode("register");
     }
   }, [registrationEnabled]);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("verification") === "1" || params.get("mode") === "register") {
+      return;
+    }
+
+    let cancelled = false;
+
+    async function restoreSavedSession() {
+      try {
+        const storedUser = authStorage.getItem("zevyq_user");
+        const token = authStorage.getItem("zevyq_access_token");
+        if (!storedUser || !token) return;
+
+        const parsedUser = JSON.parse(storedUser) as Partial<AuthUser>;
+        if (typeof parsedUser.user_id !== "string" || !parsedUser.user_id) return;
+
+        const response = await fetch(
+          `${API_URL}/users/${encodeURIComponent(parsedUser.user_id)}`,
+          {
+            cache: "no-store",
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        if (!response.ok) return;
+
+        const data = (await response.json()) as {
+          success?: boolean;
+          user?: { user_id?: string };
+        };
+
+        if (
+          !cancelled &&
+          data.success === true &&
+          data.user?.user_id === parsedUser.user_id
+        ) {
+          window.location.replace("/dashboard");
+        }
+      } catch {
+        // Bei Verbindungsfehlern gespeicherte Anmeldedaten nicht löschen.
+      }
+    }
+
+    void restoreSavedSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
