@@ -532,6 +532,36 @@ export default function LandingPreviewV2Page() {
               zum Verlust des Einsatzes führen. Nur für Volljährige.
             </p>
           </div>
+          <nav aria-label="Fußballwissen und KI-Analysen" className="mt-9 border-t border-white/10 pt-7">
+            <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">Fußballwissen &amp; KI-Analysen</h2>
+            <p className="mt-2 text-sm leading-6 text-white/45">Erfahre mehr über Daten, Quoten und die Analyse von Fußballspielen.</p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <Link href="/sportwetten" className="group rounded-2xl border border-white/10 bg-white/[0.035] p-4 transition-colors hover:border-violet-400/40 hover:bg-violet-500/[0.08]">
+                <span className="block text-sm font-bold text-white/80 transition-colors group-hover:text-violet-200">Sportwetten</span>
+                <span className="mt-1.5 block text-xs leading-5 text-white/45">Grundlagen, Quoten und Qualitätsregeln</span>
+              </Link>
+              <Link href="/fussballtipps" className="group rounded-2xl border border-white/10 bg-white/[0.035] p-4 transition-colors hover:border-violet-400/40 hover:bg-violet-500/[0.08]">
+                <span className="block text-sm font-bold text-white/80 transition-colors group-hover:text-violet-200">Fußballtipps</span>
+                <span className="mt-1.5 block text-xs leading-5 text-white/45">Datenbasierte Prognosen verstehen</span>
+              </Link>
+              <Link href="/ki-sportwetten" className="group rounded-2xl border border-white/10 bg-white/[0.035] p-4 transition-colors hover:border-violet-400/40 hover:bg-violet-500/[0.08]">
+                <span className="block text-sm font-bold text-white/80 transition-colors group-hover:text-violet-200">KI Sportwetten</span>
+                <span className="mt-1.5 block text-xs leading-5 text-white/45">KI, Wahrscheinlichkeiten und Wettmärkte</span>
+              </Link>
+              <Link href="/ki-fussballtipps" className="group rounded-2xl border border-white/10 bg-white/[0.035] p-4 transition-colors hover:border-violet-400/40 hover:bg-violet-500/[0.08]">
+                <span className="block text-sm font-bold text-white/80 transition-colors group-hover:text-violet-200">KI Fußballtipps</span>
+                <span className="mt-1.5 block text-xs leading-5 text-white/45">Daten statt Bauchgefühl</span>
+              </Link>
+              <Link href="/sportwetten-analyse" className="group rounded-2xl border border-white/10 bg-white/[0.035] p-4 transition-colors hover:border-violet-400/40 hover:bg-violet-500/[0.08]">
+                <span className="block text-sm font-bold text-white/80 transition-colors group-hover:text-violet-200">Sportwetten Analyse</span>
+                <span className="mt-1.5 block text-xs leading-5 text-white/45">Quoten und Value einordnen</span>
+              </Link>
+              <Link href="/fussball-analyse" className="group rounded-2xl border border-white/10 bg-white/[0.035] p-4 transition-colors hover:border-violet-400/40 hover:bg-violet-500/[0.08]">
+                <span className="block text-sm font-bold text-white/80 transition-colors group-hover:text-violet-200">Fußball Analyse</span>
+                <span className="mt-1.5 block text-xs leading-5 text-white/45">Spieldaten fundiert analysieren</span>
+              </Link>
+            </div>
+          </nav>
           <nav
             aria-label="Rechtliche Informationen"
             className="mt-9 flex flex-wrap gap-x-6 gap-y-3 border-t border-white/10 pt-7 text-xs text-white/50"
