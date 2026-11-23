@@ -566,6 +566,7 @@ export default function LandingPreviewV2Page() {
             aria-label="Rechtliche Informationen"
             className="mt-9 flex flex-wrap gap-x-6 gap-y-3 border-t border-white/10 pt-7 text-xs text-white/50"
           >
+            <Link href="/support" className="hover:text-white">Support</Link>
             <Link href="/impressum" className="hover:text-white">Impressum</Link>
             <Link href="/datenschutz" className="hover:text-white">Datenschutz</Link>
             <Link href="/agb" className="hover:text-white">AGB</Link>

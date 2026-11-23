@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 const legalLinks = [
+  { href: "/support", label: "Support" },
   { href: "/impressum", label: "Impressum" },
   { href: "/datenschutz", label: "Datenschutz" },
   { href: "/agb", label: "AGB" },
